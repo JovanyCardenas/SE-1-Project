@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account | Student Project{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+    <h1>Create Account</h1>
+    <p>Make an account so you can use your own project workspace.</p>
+
+    <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button class="button" type="submit">Create Account</button>
+    </form>
+
+    <p class="form-note">
+        Already have an account?
+        <a href="{% url 'login' %}">Log in</a>
+    </p>
+</section>
+{% endblock %}

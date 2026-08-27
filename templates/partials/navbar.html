@@ -1,0 +1,22 @@
+<header class="site-header">
+    <nav class="navbar">
+        <a class="brand" href="{% url 'home' %}">Student Project</a>
+
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'about' %}">About</a>
+
+            {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'profile' %}">Profile</a>
+
+                <form method="post" action="{% url 'logout' %}" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-button">Log Out</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Log In</a>
+            {% endif %}
+        </div>
+    </nav>
+</header>

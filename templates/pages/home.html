@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Student Project{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Team Project Starter</p>
+        <h1>Build your project from a clean foundation.</h1>
+        <p>
+            This starter layout gives your team a simple place to begin while you decide
+            what your Django app will become.
+        </p>
+        <a class="button" href="{% url 'dashboard' %}">View Dashboard</a>
+    </div>
+</section>
+
+<section class="grid">
+    <article class="card">
+        <h2>Simple Structure</h2>
+        <p>Reusable templates make it easier to add pages without repeating layout code.</p>
+    </article>
+
+    <article class="card">
+        <h2>Team Friendly</h2>
+        <p>Everyone can work from the same base layout and keep the project consistent.</p>
+    </article>
+
+    <article class="card">
+        <h2>Easy To Change</h2>
+        <p>The design is intentionally simple so your team can adapt it later.</p>
+    </article>
+</section>
+{% endblock %}
