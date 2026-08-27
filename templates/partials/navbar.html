@@ -2,12 +2,35 @@
     <nav class="navbar">
         <a class="brand" href="{% url 'home' %}">Student Project</a>
 
-        <div class="nav-links">
+        <button class="menu-toggle" type="button" aria-label="Toggle navigation">
+            ☰
+        </button>
+
+        <div class="nav-links" id="navLinks">
             <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'about' %}">About</a>
 
             {% if user.is_authenticated %}
-            <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+            {% endif %}
+
+            <div class="dropdown">
+                <button class="dropdown-toggle" type="button">
+                    More
+                    <span>▾</span>
+                </button>
+
+                <div class="dropdown-menu">
+                    <a href="{% url 'about' %}">About</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Resources</a>
+
+                    {% if user.is_authenticated %}
+                        <a href="#">Settings</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
                 <a href="{% url 'profile' %}">Profile</a>
 
                 <form method="post" action="{% url 'logout' %}" class="logout-form">

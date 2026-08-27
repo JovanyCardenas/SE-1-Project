@@ -17,5 +17,20 @@
     </main>
 
     {% include "partials/footer.html" %}
+
+    <script>
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navLinks = document.querySelector("#navLinks");
+    const dropdownToggle = document.querySelector(".dropdown-toggle");
+    const dropdown = document.querySelector(".dropdown");
+
+    menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("active");
+    });
+
+    dropdownToggle.addEventListener("click", () => {
+        dropdown.classList.toggle("active");
+    });
+</script>
 </body>
 </html>
