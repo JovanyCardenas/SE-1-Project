@@ -1,0 +1,9 @@
+{% if messages %}
+    <section class="messages" aria-label="Messages">
+        {% for message in messages %}
+            <div class="message message-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </section>
+{% endif %}

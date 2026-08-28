@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Access Denied | Student Project{% endblock %}
+
+{% block content %}
+<section class="content-section error-page">
+    <p class="eyebrow">403 Error</p>
+    <h1>Access denied</h1>
+    <p>You do not have permission to view this page.</p>
+
+    {% if user.is_authenticated %}
+        <a class="button" href="{% url 'dashboard' %}">Go To Dashboard</a>
+    {% else %}
+        <a class="button" href="{% url 'login' %}">Log In</a>
+    {% endif %}
+</section>
+{% endblock %}
