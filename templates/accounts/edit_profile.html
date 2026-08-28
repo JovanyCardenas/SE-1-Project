@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile | Student Project{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+    <h1>Edit Profile</h1>
+    <p>Update your profile information.</p>
+
+    <form method="post" enctype="multipart/form-data" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button class="button" type="submit">Save Changes</button>
+        <a class="button secondary-button" href="{% url 'profile' %}">Cancel</a>
+    </form>
+</section>
+{% endblock %}

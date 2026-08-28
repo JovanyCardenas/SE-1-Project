@@ -22,8 +22,8 @@ class Profile(models.Model):
     linkedin_url = models.URLField(blank=True)
     public_profile = models.BooleanField(default=False)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, editable=False)
 
     def __str__(self):
         return self.display_name or self.user.username
