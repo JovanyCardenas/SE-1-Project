@@ -9,7 +9,7 @@
     <p><strong>Username:</strong> {{ request.user.username }}</p>
     <p><strong>Email:</strong> {{ request.user.email }}</p>
     {% if request.user.email != request.user.profile.school_email %}
-    <p><strong>School Email:</strong> {{ request.user.profile.school_email }}</p>ß
+    <p><strong>School Email:</strong> {{ request.user.profile.school_email }}</p>
     {% endif %}
     <p><strong>Display Name:</strong> {{ request.user.profile.display_name }}</p>
     <p><strong>Major:</strong> {{ request.user.profile.major }}</p>
