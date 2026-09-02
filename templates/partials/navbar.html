@@ -25,6 +25,9 @@
                     <a href="{% url 'resources' %}">Resources</a>
 
                     {% if user.is_authenticated %}
+                        {% if features.households %}
+                            <a href="{% url 'household_list' %}">Households</a>
+                        {% endif %}
                         <a href="{% url 'settings' %}">Settings</a>
                     {% endif %}
                 </div>
@@ -39,7 +42,8 @@
 
                     <div class="dropdown-menu">
                         <a href="{% url 'admin:index' %}">Admin</a>
-                        <a href="{% url 'coming_soon' %}">Admin Tools</a>
+                        <a href="{% url 'feature_toggle' %}">Features Toggle</a>
+                        <a href="{% url 'admin_tools' %}">Admin Tools</a>
                     </div>
                 </div>
             {% endif %}

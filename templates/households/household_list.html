@@ -1,0 +1,44 @@
+<!-- templates/households/household_list.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Households | Student Project{% endblock %}
+
+{% block content %}
+<section class="content-section">
+    <p class="eyebrow">Households</p>
+    <h1>Your Households</h1>
+    <p>Create or join a household to manage chores, expenses, notes, and shared responsibilities.</p>
+
+    <div class="button-row">
+        <a class="button" href="{% url 'create_household' %}">Create Household</a>
+        <a class="button secondary-button" href="{% url 'join_household' %}">Join Household</a>
+    </div>
+</section>
+
+<section class="grid">
+    {% for membership in memberships %}
+        <article class="card">
+            <h2>{{ membership.household.name }}</h2>
+
+            {% if membership.household.address %}
+                <p>{{ membership.household.address }}</p>
+            {% else %}
+                <p>No address added.</p>
+            {% endif %}
+
+            <p><strong>Your role:</strong> {{ membership.get_role_display }}</p>
+            <p><strong>Invite code:</strong> {{ membership.household.invite_code }}</p>
+
+            <a class="button" href="{% url 'household_detail' membership.household.id %}">
+                Open Household
+            </a>
+        </article>
+    {% empty %}
+        <article class="card">
+            <h2>No households yet</h2>
+            <p>Create a household or join one using an invite code.</p>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}

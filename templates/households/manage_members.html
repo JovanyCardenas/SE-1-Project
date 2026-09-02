@@ -1,0 +1,62 @@
+<!-- templates/households/manage_members.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Manage Members | Student Project{% endblock %}
+
+{% block content %}
+<section class="content-section">
+    <p class="eyebrow">Owner Tools</p>
+    <h1>Manage {{ household.name }}</h1>
+    <p>Invite housemates, remove members, or transfer household ownership.</p>
+
+    <p><strong>Invite Code:</strong> {{ household.invite_code }}</p>
+
+    <form method="post" action="{% url 'regenerate_invite_code' household.id %}">
+        {% csrf_token %}
+        <button class="button" type="submit">Regenerate Invite Code</button>
+    </form>
+</section>
+
+<section class="content-section">
+    <h2>Members</h2>
+
+    <div class="grid">
+        {% for member in members %}
+            <article class="card">
+                <h3>{{ member.user.username }}</h3>
+
+                {% if member.user.email %}
+                    <p>{{ member.user.email }}</p>
+                {% endif %}
+
+                <p><strong>Role:</strong> {{ member.get_role_display }}</p>
+                <p><strong>Joined:</strong> {{ member.joined_at }}</p>
+
+                {% if member.user != request.user %}
+                    <form method="post" action="{% url 'remove_household_member' household.id member.id %}">
+                        {% csrf_token %}
+                        <button class="button secondary-button" type="submit">Remove Member</button>
+                    </form>
+
+                    <form method="post" action="{% url 'transfer_household_ownership' household.id member.id %}">
+                        {% csrf_token %}
+                        <label>
+                            Type household name to confirm ownership transfer:
+                            <input type="text" name="confirmation" placeholder="{{ household.name }}">
+                        </label>
+
+                        <button class="button" type="submit">Transfer Ownership</button>
+                    </form>
+                {% else %}
+                    <p>You are the current owner.</p>
+                {% endif %}
+            </article>
+        {% empty %}
+            <p>No members found.</p>
+        {% endfor %}
+    </div>
+
+    <a class="button secondary-button" href="{% url 'household_detail' household.id %}">Back To Household</a>
+</section>
+{% endblock %}

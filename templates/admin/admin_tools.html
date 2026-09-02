@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Tools | Superuser Dashboard{% endblock %}
+
+{% block extra_head %}
+<script>
+    tailwind = { config: { corePlugins: { preflight: false } } }
+</script>
+<script src="https://cdn.tailwindcss.com"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8 px-4 space-y-8 text-slate-800 antialiased">
+    <div class="border-b border-slate-200 pb-4">
+        <h1 class="text-3xl font-extrabold text-slate-900">Admin Control Center</h1>
+        <p class="text-sm text-slate-500 mt-1">Manage global system availability, broadcasts, and member sessions.</p>
+    </div>
+
+    <!-- Grid: Maintenance & Site Banner -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Maintenance Mode Card -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-bold text-slate-900">Maintenance Mode</h2>
+            <p class="text-xs text-slate-500 mb-4">Locks non-staff users out with an announcement screen.</p>
+            
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_maintenance">
+
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" name="maintenance_mode" value="1" {% if system_setting.maintenance_mode %}checked{% endif %} class="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                    <span class="text-sm font-semibold text-slate-900">Enable Maintenance Mode</span>
+                </label>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Lockout Message</label>
+                    <textarea name="maintenance_message" rows="3" class="w-full rounded-xl border border-slate-300 p-3 text-sm focus:border-blue-500 focus:outline-none">{{ system_setting.maintenance_message }}</textarea>
+                </div>
+
+                <button type="submit" class="rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800">
+                    Save Maintenance Status
+                </button>
+            </form>
+        </div>
+
+        <!-- Site Banners Card -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between">
+            <div>
+                <h2 class="text-lg font-bold text-slate-900">Publish Global Banner</h2>
+                <p class="text-xs text-slate-500 mb-4">Displays across all pages above navigation.</p>
+
+                <form method="post" class="space-y-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="create_banner">
+
+                    <div>
+                        <input type="text" name="message" placeholder="Notice message..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" required>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <select name="banner_type" class="rounded-xl border border-slate-300 px-3 py-2 text-xs text-slate-700 bg-white focus:outline-none">
+                            <option value="info">Info (Blue)</option>
+                            <option value="warning">Warning (Amber)</option>
+                            <option value="danger">Critical (Red)</option>
+                            <option value="success">Success (Green)</option>
+                        </select>
+                        <button type="submit" class="rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500">
+                            Post Banner
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Existing Banners List -->
+            <div class="mt-6 pt-4 border-t border-slate-100 space-y-2">
+                <span class="text-xs font-bold text-slate-400 uppercase">Recent Banners</span>
+                {% for banner in banners|slice:":3" %}
+                    <div class="flex items-center justify-between text-xs py-1.5">
+                        <span class="truncate max-w-[240px] text-slate-700">{{ banner.message }}</span>
+                        <form method="post" class="inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="toggle_banner">
+                            <input type="hidden" name="banner_id" value="{{ banner.id }}">
+                            <button type="submit" class="font-semibold {% if banner.is_active %}text-rose-600{% else %}text-slate-400{% endif %}">
+                                {% if banner.is_active %}Deactivate{% else %}Activate{% endif %}
+                            </button>
+                        </form>
+                    </div>
+                {% empty %}
+                    <p class="text-xs text-slate-400">No active banners.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- User Impersonation Card -->
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900">User Impersonation ("Login As")</h2>
+        <p class="text-xs text-slate-500 mb-4">Diagnose issues by viewing the app as any household member.</p>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="border-b border-slate-100 text-xs font-semibold text-slate-400 uppercase">
+                        <th class="py-2">User</th>
+                        <th class="py-2">Email</th>
+                        <th class="py-2">Joined</th>
+                        <th class="py-2 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for u in recent_users %}
+                    <tr>
+                        <td class="py-2.5 font-semibold text-slate-900">{{ u.username }}</td>
+                        <td class="py-2.5 text-xs text-slate-500">{{ u.email|default:"No email" }}</td>
+                        <td class="py-2.5 text-xs text-slate-400">{{ u.date_joined|date:"M d, Y" }}</td>
+                        <td class="py-2.5 text-right">
+                            <a href="{% url 'impersonate_user' u.id %}" class="rounded-lg bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-200">
+                                Login As &rarr;
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="py-4 text-center text-xs text-slate-400">No other users registered.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

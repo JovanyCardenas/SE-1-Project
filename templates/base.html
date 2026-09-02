@@ -5,14 +5,16 @@
 <head>
 
     <!-- PWA Functionality Code -->
-<link rel="manifest" href="{% static 'manifest.json' %}">
-<link rel="icon" type="image/png" sizes="512x512" href="{% static 'icons/icon-512.png' %}">
-<link rel="apple-touch-icon" href="{% static 'icons/icon-512.png' %}">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'icons/icon-512.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'icons/icon-512.png' %}">
 
-<meta name="theme-color" content="#2563eb">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Student Project">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Student Project">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    {% block extra_head %}{% endblock %}
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +22,32 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+    <!-- Impersonation Notice Bar -->
+    {% if is_impersonating %}
+    <div style="background-color: #fef2f2; border-bottom: 1px solid #fecaca; color: #991b1b; padding: 10px 20px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 9999;">
+        <div>
+            <strong>Impersonation Active:</strong> Logged in as <strong>{{ request.user.username }}</strong>
+            {% if original_user %}
+                (Original Superuser: {{ original_user.username }})
+            {% endif %}
+        </div>
+        <a href="{% url 'stop_impersonation' %}" style="background-color: #dc2626; color: white; padding: 5px 12px; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 12px; transition: background 0.2s;">
+            Exit Impersonation &rarr;
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Global Site Announcement Banner -->
+    {% if active_banner %}
+    <div style="padding: 10px 16px; text-align: center; font-size: 14px; font-weight: 500; border-bottom: 1px solid rgba(0,0,0,0.05);
+        {% if active_banner.banner_type == 'danger' %} background-color: #fee2e2; color: #991b1b;
+        {% elif active_banner.banner_type == 'warning' %} background-color: #fef3c7; color: #92400e;
+        {% elif active_banner.banner_type == 'success' %} background-color: #dcfce7; color: #166534;
+        {% else %} background-color: #e0e7ff; color: #3730a3; {% endif %}">
+        {{ active_banner.message }}
+    </div>
+    {% endif %}
+
     {% include "partials/navbar.html" %}
     {% include "partials/messages.html" %}
 
@@ -32,38 +60,38 @@
 
     <script>
         const menuToggle = document.querySelector(".menu-toggle");
-const navLinks = document.querySelector("#navLinks");
+        const navLinks = document.querySelector("#navLinks");
 
-if (menuToggle && navLinks) {
-    menuToggle.addEventListener("click", () => {
-        navLinks.classList.toggle("active");
-    });
-}
+        if (menuToggle && navLinks) {
+            menuToggle.addEventListener("click", () => {
+                navLinks.classList.toggle("active");
+            });
+        }
 
-const dropdownToggles = document.querySelectorAll(".dropdown-toggle");
+        const dropdownToggles = document.querySelectorAll(".dropdown-toggle");
 
-dropdownToggles.forEach((toggle) => {
-    toggle.addEventListener("click", (event) => {
-        event.stopPropagation();
+        dropdownToggles.forEach((toggle) => {
+            toggle.addEventListener("click", (event) => {
+                event.stopPropagation();
 
-        const dropdown = toggle.closest(".dropdown");
+                const dropdown = toggle.closest(".dropdown");
 
-        document.querySelectorAll(".dropdown").forEach((item) => {
-            if (item !== dropdown) {
-                item.classList.remove("active");
-            }
+                document.querySelectorAll(".dropdown").forEach((item) => {
+                    if (item !== dropdown) {
+                        item.classList.remove("active");
+                    }
+                });
+
+                dropdown.classList.toggle("active");
+            });
         });
 
-        dropdown.classList.toggle("active");
-    });
-});
-
-document.addEventListener("click", () => {
-    document.querySelectorAll(".dropdown").forEach((dropdown) => {
-        dropdown.classList.remove("active");
-    });
-});
+        document.addEventListener("click", () => {
+            document.querySelectorAll(".dropdown").forEach((dropdown) => {
+                dropdown.classList.remove("active");
+            });
+        });
     </script>
-<script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
 </body>
 </html>

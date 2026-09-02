@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+<!-- Temporary Tailwind CSS - In the future this can be converted to an installed Tailwind setup -->
+{% block extra_head %}
+<script>
+    tailwind = {
+        config: {
+            corePlugins: {
+                preflight: false,
+            }
+        }
+    }
+</script>
+<script src="https://cdn.tailwindcss.com"></script>
+{% endblock %}
+
+{% block title %}{{ household.name }} | Student Project{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-wide text-blue-600">
+                    Household Dashboard
+                </p>
+
+                <h1 class="mt-2 text-3xl font-bold text-slate-950">
+                    {{ household.name }}
+                </h1>
+
+                {% if household.address %}
+                    <p class="mt-2 text-slate-600">{{ household.address }}</p>
+                {% endif %}
+
+                <div class="mt-4 flex flex-wrap gap-3">
+                    <div class="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700">
+                        <span class="font-semibold">Invite Code:</span>
+                        <span class="font-mono">{{ household.invite_code }}</span>
+                    </div>
+
+                    {% if is_owner %}
+                        <span class="inline-flex items-center rounded-lg bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700">
+                            Owner Access
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <a class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700" href="{% url 'create_chore' household.id %}">
+                    Create Chore
+                </a>
+
+                <a class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800" href="{% url 'create_expense' household.id %}">
+                    Create Expense
+                </a>
+
+                {% if is_owner %}
+                    <a class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{% url 'manage_household_members' household.id %}">
+                        Manage Members
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <section class="grid gap-5 md:grid-cols-3">
+        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-medium text-slate-500">Members</p>
+            <p class="mt-2 text-3xl font-bold text-slate-950">{{ members|length }}</p>
+            <p class="mt-1 text-sm text-slate-500">People in this household</p>
+        </article>
+
+        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-medium text-slate-500">My Chores</p>
+            <p class="mt-2 text-3xl font-bold text-slate-950">{{ my_chore_assignments|length }}</p>
+            <p class="mt-1 text-sm text-slate-500">Assigned to you</p>
+        </article>
+
+        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-medium text-slate-500">What I Owe</p>
+            <p class="mt-2 text-3xl font-bold text-slate-950">{{ my_expense_shares|length }}</p>
+            <p class="mt-1 text-sm text-slate-500">Unsettled expense shares</p>
+        </article>
+    </section>
+
+    <section class="grid gap-6 xl:grid-cols-3">
+        <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-950">Members</h2>
+                    <p class="mt-1 text-sm text-slate-500">Everyone connected to this household.</p>
+                </div>
+            </div>
+
+            <div class="mt-5 space-y-3">
+                {% for member in members %}
+                    <div class="flex items-center justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
+                        <div class="min-w-0">
+                            <p class="truncate font-semibold text-slate-900">{{ member.user.username }}</p>
+
+                            {% if member.user.email %}
+                                <p class="truncate text-sm text-slate-500">{{ member.user.email }}</p>
+                            {% endif %}
+                        </div>
+
+                        <span class="shrink-0 rounded-full {% if member.role == 'owner' %}bg-blue-100 text-blue-700{% else %}bg-slate-200 text-slate-700{% endif %} px-3 py-1 text-xs font-semibold">
+                            {{ member.get_role_display }}
+                        </span>
+                    </div>
+                {% empty %}
+                    <p class="text-slate-500">No members yet.</p>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div>
+                <h2 class="text-xl font-bold text-slate-950">My Chores</h2>
+                <p class="mt-1 text-sm text-slate-500">Tasks assigned to you.</p>
+            </div>
+
+            <div class="mt-5 space-y-4">
+                {% for assignment in my_chore_assignments %}
+                    <div class="rounded-lg border border-slate-200 p-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="font-semibold text-slate-950">{{ assignment.chore.title }}</p>
+                                <p class="mt-1 text-sm text-slate-500">Due {{ assignment.due_date }}</p>
+                            </div>
+
+                            {% if assignment.completed %}
+                                <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">Done</span>
+                            {% else %}
+                                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">Open</span>
+                            {% endif %}
+                        </div>
+
+                        {% if not assignment.completed %}
+                            <form method="post" action="{% url 'complete_chore_assignment' assignment.id %}" class="mt-4">
+                                {% csrf_token %}
+                                <button class="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" type="submit">
+                                    Mark Complete
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <p class="text-slate-500">You do not have any chores assigned.</p>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div>
+                <h2 class="text-xl font-bold text-slate-950">What I Owe</h2>
+                <p class="mt-1 text-sm text-slate-500">Your unsettled shared expenses.</p>
+            </div>
+
+            <div class="mt-5 space-y-4">
+                {% for share in my_expense_shares %}
+                    <div class="rounded-lg border border-slate-200 p-4">
+                        <p class="font-semibold text-slate-950">{{ share.expense.title }}</p>
+                        <p class="mt-1 text-2xl font-bold text-slate-950">${{ share.amount_owed }}</p>
+                        <p class="mt-1 text-sm text-slate-500">Paid by {{ share.expense.paid_by.username }}</p>
+
+                        <form method="post" action="{% url 'settle_expense_share' share.id %}" class="mt-4">
+                            {% csrf_token %}
+                            <button class="w-full rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800" type="submit">
+                                Mark Settled
+                            </button>
+                        </form>
+                    </div>
+                {% empty %}
+                    <p class="text-slate-500">You do not owe anything right now.</p>
+                {% endfor %}
+            </div>
+        </article>
+    </section>
+
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h2 class="text-xl font-bold text-slate-950">Chores</h2>
+                <p class="mt-1 text-sm text-slate-500">Create chores, assign them manually, or pick someone randomly.</p>
+            </div>
+
+            <a class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" href="{% url 'create_chore' household.id %}">
+                Add Chore
+            </a>
+        </div>
+
+        <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {% for chore in chores %}
+                <article class="rounded-lg border border-slate-200 p-5">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <h3 class="font-bold text-slate-950">{{ chore.title }}</h3>
+
+                            {% if chore.description %}
+                                <p class="mt-2 text-sm text-slate-600">{{ chore.description }}</p>
+                            {% endif %}
+                        </div>
+
+                        <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                            {{ chore.get_repeat_frequency_display }}
+                        </span>
+                    </div>
+
+                    <div class="mt-5 flex flex-wrap gap-2">
+                        <a class="rounded-lg bg-slate-900 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-800" href="{% url 'assign_chore' chore.id %}">
+                            Assign
+                        </a>
+
+                        <form method="post" action="{% url 'assign_chore_randomly' chore.id %}">
+                            {% csrf_token %}
+                            <button class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" type="submit">
+                                Random
+                            </button>
+                        </form>
+
+                        {% if is_owner %}
+                            <a class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{% url 'edit_chore' chore.id %}">
+                                Edit
+                            </a>
+
+                            <a class="rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50" href="{% url 'delete_chore' chore.id %}">
+                                Delete
+                            </a>
+                        {% endif %}
+                    </div>
+                </article>
+            {% empty %}
+                <p class="text-slate-500">No chores created yet.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h2 class="text-xl font-bold text-slate-950">Recent Expenses</h2>
+                <p class="mt-1 text-sm text-slate-500">Shared purchases and split costs.</p>
+            </div>
+
+            <a class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800" href="{% url 'create_expense' household.id %}">
+                Add Expense
+            </a>
+        </div>
+
+        <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {% for expense in expenses %}
+                <article class="rounded-lg border border-slate-200 p-5">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <h3 class="font-bold text-slate-950">{{ expense.title }}</h3>
+                            <p class="mt-2 text-2xl font-bold text-slate-950">${{ expense.amount }}</p>
+                        </div>
+
+                        {% if is_owner %}
+                            <a class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{% url 'edit_expense' expense.id %}">
+                                Edit
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-3 space-y-1 text-sm text-slate-600">
+                        <p><span class="font-semibold">Paid by:</span> {{ expense.paid_by.username }}</p>
+                        <p><span class="font-semibold">Date:</span> {{ expense.date }}</p>
+                    </div>
+
+                    {% if expense.notes %}
+                        <p class="mt-3 text-sm text-slate-600">{{ expense.notes }}</p>
+                    {% endif %}
+
+                    {% if is_owner %}
+                        <form method="post" action="{% url 'delete_expense' expense.id %}" class="mt-4">
+                            {% csrf_token %}
+                            <button class="rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50" type="submit">
+                                Delete Expense
+                            </button>
+                        </form>
+                    {% endif %}
+                </article>
+            {% empty %}
+                <p class="text-slate-500">No expenses created yet.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div>
+            <h2 class="text-xl font-bold text-slate-950">House Notes</h2>
+            <p class="mt-1 text-sm text-slate-500">Shared reminders, rules, and updates.</p>
+        </div>
+
+        <form method="post" action="{% url 'create_note' household.id %}" class="mt-5 grid gap-4">
+            {% csrf_token %}
+
+            <div>
+                <label for="note-title" class="block text-sm font-semibold text-slate-700">Title</label>
+                <input id="note-title" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" type="text" name="title" placeholder="Trash day, guest note, shared reminder">
+            </div>
+
+            <div>
+                <label for="note-body" class="block text-sm font-semibold text-slate-700">Note</label>
+                <textarea id="note-body" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" name="body" rows="3" placeholder="Add details here"></textarea>
+            </div>
+
+            <div>
+                <button class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" type="submit">
+                    Add Note
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-6 grid gap-4 md:grid-cols-2">
+            {% for note in notes %}
+                <article class="rounded-lg border border-slate-200 p-5">
+                    <h3 class="font-bold text-slate-950">{{ note.title }}</h3>
+
+                    {% if note.body %}
+                        <p class="mt-2 text-sm text-slate-600">{{ note.body }}</p>
+                    {% endif %}
+
+                    <p class="mt-4 text-xs font-medium text-slate-500">
+                        By {{ note.created_by.username }}
+                    </p>
+                </article>
+            {% empty %}
+                <p class="text-slate-500">No notes yet.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}
