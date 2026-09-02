@@ -1,0 +1,21 @@
+<!-- templates/households/create_chore.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Create Chore | Student Project{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+    <p class="eyebrow">New Chore</p>
+    <h1>Create Chore</h1>
+    <p>Add a shared responsibility for this household.</p>
+
+    <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button class="button" type="submit">Create Chore</button>
+        <a class="button secondary-button" href="{% url 'household_detail' household.id %}">Cancel</a>
+    </form>
+</section>
+{% endblock %}

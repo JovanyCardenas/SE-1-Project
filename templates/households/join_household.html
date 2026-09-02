@@ -1,0 +1,21 @@
+<!-- templates/households/join_household.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Join Household | Student Project{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+    <p class="eyebrow">Join Household</p>
+    <h1>Enter Invite Code</h1>
+    <p>Ask a housemate for the household invite code.</p>
+
+    <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button class="button" type="submit">Join Household</button>
+        <a class="button secondary-button" href="{% url 'household_list' %}">Cancel</a>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,37 @@
+<!-- templates/households/edit_expense.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Edit Expense | Student Project{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+    <p class="eyebrow">Edit Expense</p>
+    <h1>{{ expense.title }}</h1>
+    <p>Update the expense details and choose who should split the cost.</p>
+
+    <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <fieldset class="checkbox-group">
+            <legend>Split Between</legend>
+
+            {% for member in members %}
+                <label class="checkbox-label">
+                    <input
+                        type="checkbox"
+                        name="split_between"
+                        value="{{ member.user.id }}"
+                        {% if member.user.id in selected_share_user_ids %}checked{% endif %}
+                    >
+                    {{ member.user.username }}
+                </label>
+            {% endfor %}
+        </fieldset>
+
+        <button class="button" type="submit">Save Changes</button>
+        <a class="button secondary-button" href="{% url 'household_detail' household.id %}">Cancel</a>
+    </form>
+</section>
+{% endblock %}

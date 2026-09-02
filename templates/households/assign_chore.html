@@ -1,0 +1,21 @@
+<!-- templates/households/assign_chore.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Assign Chore | Student Project{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+    <p class="eyebrow">Assign Chore</p>
+    <h1>{{ chore.title }}</h1>
+    <p>Choose who should complete this chore and set a due date.</p>
+
+    <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button class="button" type="submit">Assign Chore</button>
+        <a class="button secondary-button" href="{% url 'household_detail' household.id %}">Cancel</a>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+<!-- templates/households/create_expense.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Create Expense | Student Project{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+    <p class="eyebrow">Shared Expense</p>
+    <h1>Create Expense</h1>
+    <p>Add a shared purchase and choose who should split the cost.</p>
+
+    <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <fieldset class="checkbox-group">
+            <legend>Split Between</legend>
+
+            {% for member in members %}
+                <label class="checkbox-label">
+                    <input type="checkbox" name="split_between" value="{{ member.user.id }}" checked>
+                    {{ member.user.username }}
+                </label>
+            {% endfor %}
+        </fieldset>
+
+        <button class="button" type="submit">Create Expense</button>
+        <a class="button secondary-button" href="{% url 'household_detail' household.id %}">Cancel</a>
+    </form>
+</section>
+{% endblock %}
