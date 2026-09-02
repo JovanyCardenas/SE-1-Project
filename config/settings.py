@@ -56,7 +56,11 @@ INSTALLED_APPS = [
 
     # Additional Django Apps
     'core',
-    'households',
+    'households', # Demo App
+    'academics',
+    'planner',
+    'hub',
+    'degreeplan', # CSEP (Comprehensive Student Education PLan)
 ]
 
 MIDDLEWARE = [

@@ -94,6 +94,37 @@
         </div>
     </div>
 
+    <!-- System Utilities & Seeding Card -->
+<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-lg font-bold text-slate-900">Database Seeds & Utilities</h2>
+            <p class="text-xs text-slate-500">Run essential management commands without terminal or SSH access.</p>
+        </div>
+        <span class="rounded-xl bg-indigo-50 p-2 text-indigo-600">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+            </svg>
+        </span>
+    </div>
+
+    <div class="mt-5 space-y-4">
+        <div class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div>
+                <p class="text-sm font-semibold text-slate-900">Restore Default Feature Flags</p>
+                <p class="text-xs text-slate-500">Inserts missing flags (`enable_planner`, `enable_sep`, `enable_hub`) if absent.</p>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="seed_default_toggles">
+                <button type="submit" class="rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800">
+                    Sync Defaults
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
     <!-- User Impersonation Card -->
     <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 class="text-lg font-bold text-slate-900">User Impersonation ("Login As")</h2>
