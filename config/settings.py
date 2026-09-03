@@ -57,6 +57,10 @@ INSTALLED_APPS = [
     # Additional Django Apps
     'core',
     'households',
+    'academics',
+    'degreeplan',
+    'hub',
+    'planner',
 ]
 
 MIDDLEWARE = [
