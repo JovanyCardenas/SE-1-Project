@@ -1,34 +1,52 @@
+
 {% extends "base.html" %}
 
-{% block title %}Home | Student Project{% endblock %}
+{% block title %}Home | Spartan Planner{% endblock %}
 
 {% block content %}
 <section class="hero">
     <div>
-        <p class="eyebrow">Team Project Starter</p>
-        <h1>Build your project from a clean foundation.</h1>
+        <p class="eyebrow">PLAN • ORGANIZE • SUCCEED</p>
+
+        <h1>Your Academic Life, Simplified.</h1>
+
         <p>
-            This starter layout gives your team a simple place to begin while you decide
-            what your Django app will become.
+            Spartan Planner helps SJSU students stay organized
+            by keeping their courses, assignments, exams,
+            and deadlines all in one place.
         </p>
-        <a class="button" href="{% url 'dashboard' %}">View Dashboard</a>
+
+        <a class="button" href="{% url 'dashboard' %}">
+            Get Started
+        </a>
     </div>
 </section>
 
 <section class="grid">
+
     <article class="card">
-        <h2>Simple Structure</h2>
-        <p>Reusable templates make it easier to add pages without repeating layout code.</p>
+        <h2>Stay Organized</h2>
+        <p>
+            Keep track of your courses, assignments,
+            exams, and upcoming deadlines.
+        </p>
     </article>
 
     <article class="card">
-        <h2>Team Friendly</h2>
-        <p>Everyone can work from the same base layout and keep the project consistent.</p>
+        <h2>Manage Your Schedule</h2>
+        <p>
+            View your academic calendar and see
+            what's coming up throughout the semester.
+        </p>
     </article>
 
     <article class="card">
-        <h2>Easy To Change</h2>
-        <p>The design is intentionally simple so your team can adapt it later.</p>
+        <h2>Plan With Ease</h2>
+        <p>
+            Add assignments manually or upload
+            your syllabus to organize your coursework.
+        </p>
     </article>
+
 </section>
 {% endblock %}

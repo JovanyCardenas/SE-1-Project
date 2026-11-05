@@ -1,25 +1,31 @@
+
 {% extends "base.html" %}
 
-{% block title %}Dashboard | Spartan Academic Planner{% endblock %}
+{% block title %}Dashboard | Spartan Planner{% endblock %}
 
 {% block content %}
+
+<!-- Dashboard Header -->
 <section class="dashboard-header">
     <div>
         <p class="eyebrow">Spartan Academic Planner</p>
 
         <h1>
-            Welcome{% if request.user.first_name %}, {{ request.user.first_name }}{% endif %}
+            Welcome{% if request.user.first_name %},
+            {{ request.user.first_name }}{% endif %}!
         </h1>
 
         <p class="dashboard-subtitle">
-            Manage your courses, assignments, calendar, and academic resources from one place.
+            Stay organized and keep track of your upcoming deadlines.
         </p>
     </div>
-
-    <a href="#" class="button">Add Course</a>
 </section>
 
+
+<!-- Dashboard Overview -->
 <section class="dashboard-overview">
+
+    <!-- Upcoming Assignments -->
     <article class="card">
         <div class="card-heading">
             <div>
@@ -27,15 +33,20 @@
                 <h2>Upcoming Assignments</h2>
             </div>
 
-            <a href="#" class="card-link">View all</a>
+            <a href="#" class="card-link">View All</a>
         </div>
 
         <div class="empty-state">
             <p>No upcoming assignments yet.</p>
-            <span>Assignments from your courses will appear here.</span>
+            <span>
+                Your upcoming assignments and exams
+                will appear here.
+            </span>
         </div>
     </article>
 
+
+    <!-- My Courses -->
     <article class="card">
         <div class="card-heading">
             <div>
@@ -43,104 +54,64 @@
                 <h2>My Courses</h2>
             </div>
 
-            <a href="#" class="card-link">View</a>
+            <a href="#" class="card-link">View All</a>
         </div>
 
         <div class="empty-state">
-            <p>No courses yet.</p>
-            <span>Create a course or join an existing one to get started.</span>
+            <p>No courses added yet.</p>
+            <span>
+                Add your courses to start organizing
+                your assignments and deadlines.
+            </span>
         </div>
     </article>
+
 </section>
 
+
+<!-- Quick Actions -->
 <section class="dashboard-section">
+
     <div class="section-heading">
         <h2>Quick Actions</h2>
-        <p>Common actions to get your academic planner set up.</p>
+        <p>Get started with your academic planner.</p>
     </div>
 
     <div class="quick-action-grid">
+
+        <!-- Add Course -->
         <a href="#" class="quick-action-card">
             <div class="quick-action-icon">+</div>
             <div>
                 <h3>Add Course</h3>
-                <p>Create a course or join an existing course.</p>
+                <p>
+                    Add a course to your planner.
+                </p>
             </div>
         </a>
 
+        <!-- Add Assignment -->
         <a href="#" class="quick-action-card">
             <div class="quick-action-icon">✓</div>
             <div>
                 <h3>Add Assignment</h3>
-                <p>Add a personal assignment or deadline.</p>
+                <p>
+                    Create an assignment or exam.
+                </p>
             </div>
         </a>
 
-        <a href="#" class="quick-action-card">
+        <!-- Upload Syllabus -->
+        <a href="{% url 'upload_syllabus' %}"
+        class="quick-action-card">
             <div class="quick-action-icon">↑</div>
             <div>
                 <h3>Upload Syllabus</h3>
-                <p>Upload a syllabus and identify important course dates.</p>
+                <p>Import course information and deadlines.</p>
             </div>
         </a>
 
-        <a href="#" class="quick-action-card">
-            <div class="quick-action-icon">+</div>
-            <div>
-                <h3>Add Event</h3>
-                <p>Add a study session, meeting, reminder, or event.</p>
-            </div>
-        </a>
     </div>
 </section>
 
-<section class="dashboard-secondary-grid">
-    <article class="card">
-        <div class="card-heading">
-            <div>
-                <p class="card-label">Schedule</p>
-                <h2>Calendar</h2>
-            </div>
-
-            <a href="#" class="card-link">Open</a>
-        </div>
-
-        <p class="text-muted">
-            Assignments, exams, and personal events will appear in your academic calendar.
-        </p>
-
-        <div class="calendar-placeholder">
-            <span>Calendar preview coming soon</span>
-        </div>
-    </article>
-
-    <article class="card">
-        <div class="card-heading">
-            <div>
-                <p class="card-label">Courses</p>
-                <h2>Shared Resources</h2>
-            </div>
-
-            <a href="#" class="card-link">View</a>
-        </div>
-
-        <div class="empty-state">
-            <p>No shared resources yet.</p>
-            <span>Study guides, useful links, and course materials will appear here.</span>
-        </div>
-    </article>
-</section>
-
-<section class="getting-started">
-    <div>
-        <p class="card-label">Getting Started</p>
-        <h2>Build your academic planner</h2>
-        <p>
-            Start by creating or joining a course. From there, you can upload a syllabus,
-            add assignments, and organize everything through your planner and calendar.
-        </p>
-    </div>
-
-    <a href="#" class="button secondary-button">View Courses</a>
-</section>
 {% endblock %}

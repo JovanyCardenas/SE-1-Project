@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<div class="page-head"><h1>{{ heading }}</h1></div><section class="card narrow"><form method="post" class="form">{% csrf_token %}{{ form.as_p }}<button class="button" type="submit">Save</button><a class="button button-secondary" href="javascript:history.back()">Cancel</a></form></section>{% endblock %}

@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<section class="card narrow"><h1>Confirm deletion</h1><p>Delete <strong>{{ item }}</strong>? This can't be undone.</p><form method="post">{% csrf_token %}<button type="submit" class="button danger">Delete</button><a class="button button-secondary" href="{% url 'dashboard' %}">Cancel</a></form></section>{% endblock %}
