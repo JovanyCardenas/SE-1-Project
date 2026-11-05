@@ -1,38 +1,66 @@
+
 <header class="site-header">
     <nav class="navbar">
-        <a class="brand" href="{% url 'home' %}">Student Project</a>
 
-        <button class="menu-toggle" type="button" aria-label="Toggle navigation">
+        <!-- Branding -->
+        <a class="brand" href="{% url 'home' %}">
+            Spartan Planner
+        </a>
+
+        <!-- Mobile Menu -->
+        <button class="menu-toggle" type="button"
+                aria-label="Toggle navigation"
+                aria-controls="navLinks"
+                aria-expanded="false">
             ☰
         </button>
 
         <div class="nav-links" id="navLinks">
-            <a href="{% url 'home' %}">Home</a>
 
             {% if user.is_authenticated %}
+
+                <!-- Main Navigation -->
                 <a href="{% url 'dashboard' %}">Dashboard</a>
+
+                <!-- Add when calendar route exists -->
+                <a href="{% url 'calendar' %}">Calendar</a>
+
+                <!-- Add when courses route exists -->
+                <a href="{% url 'course_list' %}">Courses</a>
+
+            {% else %}
+
+                <a href="{% url 'home' %}">Home</a>
+
             {% endif %}
 
+            <!-- More Dropdown -->
             <div class="dropdown">
-                <button class="dropdown-toggle" type="button">
+                <button class="dropdown-toggle" type="button"
+                        aria-expanded="false">
                     More
                     <span>▾</span>
                 </button>
 
                 <div class="dropdown-menu">
-                    <a href="{% url 'about' %}">About</a>
-                    <a href="{% url 'contact' %}">Contact</a>
-                    <a href="{% url 'resources' %}">Resources</a>
 
                     {% if user.is_authenticated %}
-                        {% if features.households %}
-                            <a href="{% url 'household_list' %}">Households</a>
-                        {% endif %}
-                        <a href="{% url 'settings' %}">Settings</a>
+                        <a href="{% url 'profile' %}">
+                            Profile
+                        </a>
+
+                        <a href="{% url 'settings' %}">
+                            Settings
+                        </a>
                     {% endif %}
+
+                    <a href="{% url 'about' %}">About</a>
+                    <a href="{% url 'contact' %}">Contact</a>
+
                 </div>
             </div>
 
+            <!-- Staff Navigation -->
             {% if user.is_staff %}
                 <div class="dropdown">
                     <button class="dropdown-toggle" type="button">
@@ -41,23 +69,40 @@
                     </button>
 
                     <div class="dropdown-menu">
-                        <a href="{% url 'admin:index' %}">Admin</a>
-                        <a href="{% url 'feature_toggle' %}">Features Toggle</a>
-                        <a href="{% url 'admin_tools' %}">Admin Tools</a>
+                        <a href="{% url 'admin:index' %}">
+                            Admin
+                        </a>
+
+                        <a href="{% url 'feature_toggle' %}">
+                            Features Toggle
+                        </a>
+
+                        <a href="{% url 'admin_tools' %}">
+                            Admin Tools
+                        </a>
                     </div>
                 </div>
             {% endif %}
 
+            <!-- Authentication -->
             {% if user.is_authenticated %}
-                <a href="{% url 'profile' %}">Profile</a>
 
-                <form method="post" action="{% url 'logout' %}" class="logout-form">
+                <form method="post"
+                      action="{% url 'logout' %}"
+                      class="logout-form">
                     {% csrf_token %}
-                    <button type="submit" class="nav-button">Log Out</button>
+
+                    <button type="submit" class="nav-button">
+                        Log Out
+                    </button>
                 </form>
+
             {% else %}
+
                 <a href="{% url 'login' %}">Log In</a>
+
             {% endif %}
+
         </div>
     </nav>
 </header>

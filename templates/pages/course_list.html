@@ -1,0 +1,38 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Courses | Spartan Planner{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-header">
+    <div>
+        <p class="eyebrow">Academic Planner</p>
+        <h1>My Courses</h1>
+        <p class="dashboard-subtitle">
+            Manage your classes and keep your
+            course information organized.
+        </p>
+    </div>
+</section>
+
+<section class="dashboard-overview">
+    <article class="card">
+        <div class="card-heading">
+            <div>
+                <p class="card-label">Courses</p>
+                <h2>Your Courses</h2>
+            </div>
+        </div>
+
+        <div class="empty-state">
+            <p>No courses added yet.</p>
+            <span>
+                Your enrolled courses will appear here
+                once you add them to your planner.
+            </span>
+        </div>
+    </article>
+</section>
+
+{% endblock %}

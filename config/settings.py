@@ -58,8 +58,6 @@ INSTALLED_APPS = [
     'core',
     'households',
     'academics',
-    'degreeplan',
-    'hub',
     'planner',
 ]
 

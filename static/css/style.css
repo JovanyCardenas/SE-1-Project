@@ -59,11 +59,16 @@
 }
 
 html {
+    min-height: 100%;
     scroll-behavior: smooth;
 }
 
 body {
     margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
     font-family: Arial, Helvetica, sans-serif;
     color: var(--color-text);
     background: var(--color-bg);
@@ -125,6 +130,7 @@ h3 {
 }
 
 .page {
+    flex: 1;
     padding-top: var(--space-3xl);
     padding-bottom: var(--space-3xl);
 }
@@ -560,6 +566,7 @@ textarea.form-control {
 
 /* ---------- Footer ---------- */
 .site-footer {
+    flex-shrink: 0;
     padding: var(--space-xl);
     color: var(--color-muted);
     background: var(--color-surface);
@@ -627,7 +634,7 @@ textarea.form-control {
 
 .quick-action-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-lg);
 }
 
@@ -841,5 +848,67 @@ textarea.form-control {
 
     .getting-started {
         padding: 24px;
+    }
+}
+
+
+/* Syllabus Upload */
+
+.syllabus-upload-card {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.syllabus-upload-card h2 {
+    margin-bottom: 0.5rem;
+}
+
+.upload-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    margin: 1.5rem 0;
+    background: #f8fafc;
+}
+
+.upload-icon {
+    font-size: 2.5rem;
+    color: #0055a2;
+    margin-bottom: 1rem;
+}
+
+.upload-area label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.upload-area input {
+    max-width: 100%;
+}
+
+.form-error {
+    color: #b91c1c;
+    margin: 1rem 0;
+}
+
+.form-success {
+    padding: 1rem;
+    margin: 1rem 0;
+    border: 1px solid #86efac;
+    border-radius: 8px;
+    background: #f0fdf4;
+    color: #166534;
+}
+
+@media (max-width: 600px) {
+    .syllabus-upload-card {
+        padding: 1.25rem;
+    }
+
+    .upload-area {
+        padding: 1.5rem 1rem;
     }
 }

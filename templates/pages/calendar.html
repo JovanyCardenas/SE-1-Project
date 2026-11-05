@@ -1,0 +1,38 @@
+
+{% extends "base.html" %}
+
+{% block title %}Calendar | Spartan Planner{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-header">
+    <div>
+        <p class="eyebrow">Academic Planner</p>
+        <h1>Assignment Calendar</h1>
+        <p class="dashboard-subtitle">
+            View your upcoming assignments, exams,
+            and important deadlines.
+        </p>
+    </div>
+</section>
+
+<section class="dashboard-section">
+    <article class="card">
+        <div class="card-heading">
+            <div>
+                <p class="card-label">Schedule</p>
+                <h2>My Calendar</h2>
+            </div>
+        </div>
+
+        <div class="empty-state">
+            <p>No events scheduled yet.</p>
+            <span>
+                Your assignments and exams will appear
+                here once they're added to your planner.
+            </span>
+        </div>
+    </article>
+</section>
+
+{% endblock %}
