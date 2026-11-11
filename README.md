@@ -8,9 +8,19 @@ This project is being developed by Group W01 for CMPE 131 while following the so
 
 ## Project Status
 
-**Current Phase:** project definition, requirements, and architecture planning
+**Current Phase:** early implementation, with a working syllabus-to-deadlines flow.
 
-The project idea has been selected and the team is now developing the **Spartan Academic Planner**.
+Implemented: account registration/login and profiles; admin controls; SJSU course creation/joining;
+text-PDF syllabus extraction; private editable review drafts; publishing verified shared deadlines;
+and course, dashboard, and calendar-list views of those deadlines. An older household module also remains.
+
+To try syllabus parsing, sign in, open **Courses → Add or join a course**, then **Upload syllabus**.
+Review the extracted rows and click **Publish selected items**. No assignments are created before review.
+Run `python manage.py migrate` after installing dependencies to create the academic tables.
+
+See [Syllabus Parsing](docs/SYLLABUS_PARSING.md) for supported formats, limits, and test instructions.
+Personal assignments/grades, grading-weight extraction, messaging, OCR, and calendar synchronization
+are still planned. The calendar currently shows an ordered list, not a month-grid or external sync.
 
 ## Core Idea
 

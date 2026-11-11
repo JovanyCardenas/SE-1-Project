@@ -1,79 +1,23 @@
-
 {% extends "base.html" %}
-
 {% block title %}Upload Syllabus | Spartan Planner{% endblock %}
-
 {% block content %}
-
 <section class="dashboard-header">
-    <div>
-        <p class="eyebrow">Academic Planner</p>
-        <h1>Upload Syllabus</h1>
-        <p class="dashboard-subtitle">
-            Upload your syllabus to organize your
-            course information and important dates.
-        </p>
-    </div>
+    <div><p class="eyebrow">Academic Planner</p><h1>Upload Syllabus</h1>
+    <p class="dashboard-subtitle">Extract course deadlines, then review and edit them before publishing.</p></div>
 </section>
-
-<section class="content-section">
-
-    <article class="card syllabus-upload-card">
-
-        <h2>Select Your Syllabus</h2>
-
-        <p class="text-muted">
-            Choose a PDF file from your device.
-            You'll be able to review extracted
-            information before saving it.
-        </p>
-
-        {% if error %}
-            <p role="alert" class="form-error">
-                {{ error }}
-            </p>
-        {% endif %}
-
-        {% if success %}
-            <div role="status" class="form-success">
-                <p>{{ success }}</p>
-                <p>{{ filename }}</p>
-            </div>
-        {% endif %}
-
-        <form method="post"
-              enctype="multipart/form-data">
-
-            {% csrf_token %}
-
-            <div class="upload-area">
-                <div class="upload-icon">↑</div>
-
-                <label for="syllabus">
-                    Choose a syllabus PDF
-                </label>
-
-                <input
-                    type="file"
-                    id="syllabus"
-                    name="syllabus"
-                    accept=".pdf,application/pdf"
-                    required
-                >
-
-                <p class="text-muted">
-                    PDF files only (max 10 MB)
-                </p>
-            </div>
-
-            <button type="submit" class="button">
-                Upload Syllabus
-            </button>
-
-        </form>
-
-    </article>
-
+<section class="card syllabus-upload-card">
+    <h2>Select your syllabus</h2>
+    <p class="text-muted">Use a text-based PDF, up to 10 MB and 30 pages. Scanned PDFs require OCR first.
+        The original file is not retained; extracted draft text is visible only to you.</p>
+    {% if has_courses %}
+    <form method="post" enctype="multipart/form-data" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button">Extract deadlines</button>
+    </form>
+    {% else %}
+    <p>Add or join your course before uploading a syllabus.</p>
+    {% endif %}
+    <p class="mt-md"><a href="{% url 'academics:course_add' %}">Add or join a course</a></p>
 </section>
-
 {% endblock %}

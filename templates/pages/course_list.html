@@ -25,13 +25,15 @@
             </div>
         </div>
 
-        <div class="empty-state">
-            <p>No courses added yet.</p>
-            <span>
-                Your enrolled courses will appear here
-                once you add them to your planner.
-            </span>
+        <p><a class="button" href="{% url 'academics:course_add' %}">Add or join a course</a></p>
+        {% for course in courses %}
+        <div class="course-list-item">
+            <h3><a href="{% url 'academics:course_detail' course.pk %}">{{ course }}</a></h3>
+            <p>{{ course.name }}</p>
         </div>
+        {% empty %}
+        <div class="empty-state"><p>No courses added yet.</p><span>Add your course to start importing syllabus deadlines.</span></div>
+        {% endfor %}
     </article>
 </section>
 

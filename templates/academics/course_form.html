@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Add Course | Spartan Planner{% endblock %}
+{% block content %}
+<section class="dashboard-header">
+    <div><p class="eyebrow">Academic Planner</p><h1>Add or Join a Course</h1>
+    <p class="dashboard-subtitle">Enter your SJSU course offering. Matching code, section, semester, and year reuse the same shared deadlines.</p></div>
+</section>
+<section class="card syllabus-upload-card">
+    <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button">Add or join course</button>
+        <a class="button button-secondary" href="{% url 'course_list' %}">Back to courses</a>
+    </form>
+</section>
+{% endblock %}

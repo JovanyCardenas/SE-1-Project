@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ course.code }} | Spartan Planner{% endblock %}
+{% block content %}
+<section class="dashboard-header">
+    <div><p class="eyebrow">{{ course }}</p><h1>{{ course.name }}</h1>
+    <p class="dashboard-subtitle">Verified syllabus items are shared with everyone who joins this course.</p></div>
+    <a class="button" href="{% url 'upload_syllabus' %}?course={{ course.pk }}">Upload syllabus</a>
+</section>
+{% if drafts %}
+<section class="card mb-lg">
+    <h2>Your unfinished imports</h2>
+    <ul>{% for draft in drafts %}
+        <li><a href="{% url 'academics:syllabus_review' draft.pk %}">Review {{ draft.filename }}</a></li>
+    {% endfor %}</ul>
+</section>
+{% endif %}
+<section class="card">
+    <h2>Shared deadlines</h2>
+    {% include "academics/assignment_list.html" with assignments=course.assignments.all %}
+    <a href="{% url 'course_list' %}">Back to courses</a>
+</section>
+{% endblock %}

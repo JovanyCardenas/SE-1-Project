@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import *
+from academics.views import upload_syllabus
 
 urlpatterns = [
     path("", home, name="home"),

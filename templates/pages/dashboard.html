@@ -33,16 +33,10 @@
                 <h2>Upcoming Assignments</h2>
             </div>
 
-            <a href="#" class="card-link">View All</a>
+            <a href="{% url 'calendar' %}" class="card-link">View All</a>
         </div>
 
-        <div class="empty-state">
-            <p>No upcoming assignments yet.</p>
-            <span>
-                Your upcoming assignments and exams
-                will appear here.
-            </span>
-        </div>
+        {% include "academics/assignment_list.html" with show_course=True %}
     </article>
 
 
@@ -54,16 +48,14 @@
                 <h2>My Courses</h2>
             </div>
 
-            <a href="#" class="card-link">View All</a>
+            <a href="{% url 'course_list' %}" class="card-link">View All</a>
         </div>
 
-        <div class="empty-state">
-            <p>No courses added yet.</p>
-            <span>
-                Add your courses to start organizing
-                your assignments and deadlines.
-            </span>
-        </div>
+        {% for course in courses %}
+        <p><a href="{% url 'academics:course_detail' course.pk %}">{{ course }}</a></p>
+        {% empty %}
+        <div class="empty-state"><p>No courses added yet.</p><span>Add your courses to organize shared deadlines.</span></div>
+        {% endfor %}
     </article>
 
 </section>
@@ -80,7 +72,7 @@
     <div class="quick-action-grid">
 
         <!-- Add Course -->
-        <a href="#" class="quick-action-card">
+        <a href="{% url 'academics:course_add' %}" class="quick-action-card">
             <div class="quick-action-icon">+</div>
             <div>
                 <h3>Add Course</h3>

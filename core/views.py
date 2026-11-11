@@ -6,6 +6,8 @@ from .models import *
 from .signals import DEFAULT_TOGGLES
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
+from django.utils import timezone
+from academics.models import Course, CourseAssignment
 
 User = get_user_model()
 
@@ -131,49 +133,23 @@ def settings(request):
 
 @login_required
 def dashboard(request):
-    return render(request, "pages/dashboard.html")
+    return render(request, "pages/dashboard.html", {
+        "courses": Course.objects.filter(enrollments__user=request.user),
+        "assignments": CourseAssignment.objects.filter(
+            course__enrollments__user=request.user, due_date__gte=timezone.localdate(),
+        ).select_related("course")[:5],
+    })
 
 
 @login_required
 def calendar_view(request):
-    return render(request, "pages/calendar.html")
+    return render(request, "pages/calendar.html", {
+        "assignments": CourseAssignment.objects.filter(course__enrollments__user=request.user).select_related("course"),
+    })
 
 
 @login_required
 def course_list(request):
-    return render(request, "pages/course_list.html")
-
-
-@login_required
-def upload_syllabus(request):
-    context = {}
-
-    if request.method == "POST":
-        file = request.FILES.get("syllabus")
-
-        if not file:
-            context["error"] = "Please select a PDF file."
-
-        elif not file.name.lower().endswith(".pdf"):
-            context["error"] = "Only PDF files are supported."
-
-        elif file.size > 10 * 1024 * 1024:
-            context["error"] = "File must be smaller than 10 MB."
-
-        elif file.read(5) != b"%PDF-":
-            context["error"] = "This does not appear to be a valid PDF."
-
-        else:
-            # PDF extraction and review will be added
-            # in the next step.
-            context["success"] = (
-                "PDF received successfully. "
-                "Extraction and review are not enabled yet."
-            )
-            context["filename"] = file.name
-
-    return render(
-        request,
-        "pages/upload_syllabus.html",
-        context
-    )
+    return render(request, "pages/course_list.html", {
+        "courses": Course.objects.filter(enrollments__user=request.user),
+    })
