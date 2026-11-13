@@ -854,6 +854,36 @@ textarea.form-control {
 
 /* Syllabus Upload */
 
+.syllabus-review-row {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    min-width: 0;
+}
+
+.review-fields {
+    display: grid;
+    grid-template-columns: 1fr 3fr 2fr 2fr;
+    gap: 1rem;
+    align-items: start;
+}
+
+.review-field { min-width: 0; }
+.review-field input:not([type="checkbox"]), .review-field select { width: 100%; }
+.review-field input[type="checkbox"] { width: auto; }
+.review-warnings { color: #854d0e; margin: 1rem 0; }
+.syllabus-review-row details { margin-top: 1rem; overflow-wrap: anywhere; }
+.syllabus-review-row summary { cursor: pointer; }
+.table-scroll { overflow-x: auto; margin: 1rem 0; }
+.deadline-table { width: 100%; border-collapse: collapse; }
+.deadline-table th, .deadline-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--color-border); }
+.course-list-item { padding: 1rem 0; border-bottom: 1px solid var(--color-border); }
+
+@media (max-width: 800px) {
+    .review-fields { grid-template-columns: 1fr; }
+}
+
 .syllabus-upload-card {
     max-width: 650px;
     margin: 0 auto;

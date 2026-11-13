@@ -25,13 +25,8 @@
             </div>
         </div>
 
-        <div class="empty-state">
-            <p>No events scheduled yet.</p>
-            <span>
-                Your assignments and exams will appear
-                here once they're added to your planner.
-            </span>
-        </div>
+        <p class="text-muted">Shared syllabus deadlines, ordered by date.</p>
+        {% include "academics/assignment_list.html" with show_course=True %}
     </article>
 </section>
 

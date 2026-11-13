@@ -621,22 +621,27 @@ SAP planner event created/updated
 
 ## 15. Development Roadmap
 
+Current implementation note: the syllabus flow now supports SJSU course matching/enrollment,
+PDF extraction, private review drafts, publication of shared date-based items, and deadline lists.
+See [Syllabus Parsing](docs/SYLLABUS_PARSING.md) for the precise scope. Original PDF retention,
+grading categories, personal planner state, and the broader integrations below remain future work.
+
 ### Sprint 1 — Shared Academic Data Foundation
 
 - [ ] Create/confirm `academics`, `planner`, `integrations`, and `messaging` app boundaries.
 - [ ] Implement `Course` with class name, short name, section, semester, year, and syllabus.
-- [ ] Implement `CourseEnrollment`.
-- [ ] Add course matching / duplicate prevention.
-- [ ] Implement shared `CourseAssignment`.
+- [x] Implement `CourseEnrollment`.
+- [x] Add course matching / duplicate prevention (SJSU offerings).
+- [x] Implement shared `CourseAssignment` (reviewed syllabus deadlines).
 - [ ] Implement personal `StudentAssignment` and `PlannerEvent`.
 - [ ] Add source labels for `SYLLABUS`, `MANUAL`, `CALENDAR_SYNC`, and `SYSTEM`.
 
 ### Sprint 2 — Syllabus Parser & Core Planner
 
-- [ ] Build syllabus upload flow.
-- [ ] Extract assignment/event/date information.
-- [ ] Build parser staging and verification interface.
-- [ ] Publish verified results as shared course items.
+- [x] Build syllabus upload flow (text PDFs).
+- [x] Extract assignment/event/date information (supported formats; review required).
+- [x] Build parser staging and verification interface.
+- [x] Publish verified results as shared course items.
 - [ ] Build course dashboard and personal planner/calendar.
 - [ ] Add manual assignment and event creation.
 - [ ] Clearly display shared vs. personal/source information.
