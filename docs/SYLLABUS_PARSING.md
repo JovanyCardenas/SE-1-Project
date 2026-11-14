@@ -2,7 +2,7 @@
 
 This is a deterministic extraction-and-review prototype. It uses local pypdf text extraction,
 section recognition, table columns, and date/assessment rules. It makes no external AI or network
-calls. It is not a claim of accurate extraction from every syllabus; see [evaluation](PARSER_EVALUATION.md).
+calls. It is not a claim of accurate extraction from every syllabus.
 
 ## Try locally
 
@@ -106,7 +106,7 @@ python manage.py evaluate_syllabus_parser --report parser-evaluation.json
 The evaluation command uses committed synthetic examples and exits with an error on mismatch.
 Tests also generate PDFs and exercise review edits, undated publication, calendar exclusion,
 access restrictions, CSRF, HTML escaping, duplicate/replayed publication, and rollback.
-No external API key is needed. See [evaluation](PARSER_EVALUATION.md) for the limits of this evidence.
+No external API key is needed. These regression checks do not measure accuracy on unseen syllabi.
 
 Run migrations locally after updating: `0001_initial` creates the academic models, and
 `0002_courseassignment_schedule_details_and_more` adds structured analysis, schedule details,

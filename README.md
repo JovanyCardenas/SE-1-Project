@@ -29,8 +29,7 @@ To try syllabus parsing, sign in, open **Courses → Add or join a course**, the
 Review the extracted rows and click **Publish selected items**. No assignments are created before review.
 Run `python manage.py migrate` after installing dependencies to create the academic tables.
 
-See [Syllabus Parsing](docs/SYLLABUS_PARSING.md) for supported formats, limits, and test instructions,
-and [Parser Evaluation](docs/PARSER_EVALUATION.md) for evidence and remaining gaps. Extraction is
+See [Syllabus Parsing](docs/SYLLABUS_PARSING.md) for supported formats, limits, and test instructions. Extraction is
 heuristic and requires human review; it is not validated for arbitrary syllabi.
 Personal grades, shared grading settings, messaging, OCR, and calendar synchronization
 are still planned. The calendar shows an ordered list of dated items, not a month-grid or external sync.

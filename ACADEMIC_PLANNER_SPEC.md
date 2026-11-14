@@ -624,8 +624,7 @@ SAP planner event created/updated
 Current implementation note: the local syllabus prototype supports SJSU course matching/enrollment,
 text-PDF analysis, private review drafts, and publication of dated or undated course items, including
 class sessions. Grading, assessment counts, meetings, and policies are private reference findings.
-See [Syllabus Parsing](docs/SYLLABUS_PARSING.md) and [Parser Evaluation](docs/PARSER_EVALUATION.md)
-for supported cases and evidence limits. Original PDF retention, shared grading settings, personal
+See [Syllabus Parsing](docs/SYLLABUS_PARSING.md) for supported cases and limitations. Original PDF retention, shared grading settings, personal
 planner state, and the broader integrations below remain future work. Parsing must run entirely
 locally; no external AI API is authorized. This iteration has not been deployed.
 
