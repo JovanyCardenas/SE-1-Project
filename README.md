@@ -6,21 +6,34 @@ The **Spartan Academic Planner (SAP)** is a student-focused academic planning an
 
 This project is being developed by Group W01 for CMPE 131 while following the software engineering process, including planning, requirements, design, implementation, testing, documentation, and deployment.
 
+## Minimum acceptance release
+
+The November 14 local release adds private manual assignments with optional course/date, notes,
+completion, editing, cancellation, and confirmed deletion. Open Dashboard > Add Assignment
+or My personal assignments. These records remain private and separate from shared calendar items.
+Run migrations after updating. Run `python manage.py test` for automated checks.
+The assignment submission document and acceptance setup files are distributed separately.
+This iteration has not been pushed or deployed.
+
 ## Project Status
 
-**Current Phase:** early implementation, with a working syllabus-to-deadlines flow.
+**Current Phase:** early implementation, with a local syllabus extraction and review prototype.
 
 Implemented: account registration/login and profiles; admin controls; SJSU course creation/joining;
-text-PDF syllabus extraction; private editable review drafts; publishing verified shared deadlines;
-and course, dashboard, and calendar-list views of those deadlines. An older household module also remains.
+text-PDF syllabus extraction; private editable review drafts; publishing verified dated or undated
+course items; and course, dashboard, and calendar-list views. The parser identifies assessments and
+class schedules, and retains grading, meeting, and course information as private reference findings.
+All extraction runs locally, without an external AI API. An older household module also remains.
 
 To try syllabus parsing, sign in, open **Courses → Add or join a course**, then **Upload syllabus**.
 Review the extracted rows and click **Publish selected items**. No assignments are created before review.
 Run `python manage.py migrate` after installing dependencies to create the academic tables.
 
-See [Syllabus Parsing](docs/SYLLABUS_PARSING.md) for supported formats, limits, and test instructions.
-Personal assignments/grades, grading-weight extraction, messaging, OCR, and calendar synchronization
-are still planned. The calendar currently shows an ordered list, not a month-grid or external sync.
+See [Syllabus Parsing](docs/SYLLABUS_PARSING.md) for supported formats, limits, and test instructions,
+and [Parser Evaluation](docs/PARSER_EVALUATION.md) for evidence and remaining gaps. Extraction is
+heuristic and requires human review; it is not validated for arbitrary syllabi.
+Personal grades, shared grading settings, messaging, OCR, and calendar synchronization
+are still planned. The calendar shows an ordered list of dated items, not a month-grid or external sync.
 
 ## Core Idea
 

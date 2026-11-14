@@ -3,7 +3,7 @@
 {% block content %}
 <section class="dashboard-header">
     <div><p class="eyebrow">Academic Planner</p><h1>Upload Syllabus</h1>
-    <p class="dashboard-subtitle">Extract course deadlines, then review and edit them before publishing.</p></div>
+    <p class="dashboard-subtitle">Find assessments, class schedules, and course information, then review the results.</p></div>
 </section>
 <section class="card syllabus-upload-card">
     <h2>Select your syllabus</h2>
@@ -13,7 +13,7 @@
     <form method="post" enctype="multipart/form-data" class="form">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="button">Extract deadlines</button>
+        <button type="submit" class="button">Analyze syllabus</button>
     </form>
     {% else %}
     <p>Add or join your course before uploading a syllabus.</p>

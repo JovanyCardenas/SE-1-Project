@@ -25,6 +25,11 @@ class CourseForm(forms.Form):
 
 class UploadForm(forms.Form):
     course = forms.ModelChoiceField(queryset=Course.objects.none())
+    date_order = forms.ChoiceField(
+        choices=[("MDY", "Month/day (9/15 = September 15)"), ("DMY", "Day/month (15/9 = September 15)")],
+        initial="MDY", required=False, label="Numeric date order",
+        help_text="Choose the order used in this syllabus. Month names and ISO dates are recognized separately.",
+    )
     syllabus = forms.FileField(
         help_text="Text-based PDF, up to 10 MB and 30 pages. Scans require OCR first.",
         widget=forms.ClearableFileInput(attrs={"accept": ".pdf,application/pdf"}),
@@ -51,6 +56,7 @@ class CandidateForm(forms.Form):
     include = forms.BooleanField(required=False, label="Include this item")
     title = forms.CharField(max_length=200, required=False)
     due_date = forms.DateField(required=False, widget=forms.DateInput(attrs={"type": "date"}))
+    keep_undated = forms.BooleanField(required=False, label="Keep date unknown")
     item_type = forms.ChoiceField(choices=CourseAssignment.Kind.choices, required=False, label="Type")
 
     def clean(self):
@@ -59,9 +65,11 @@ class CandidateForm(forms.Form):
             # Skipped rows need not have valid dates or titles.
             self._errors.clear()
             return cleaned
-        for field in ("title", "due_date", "item_type"):
+        for field in ("title", "item_type"):
             if not cleaned.get(field) and field not in self.errors:
                 self.add_error(field, "Required for an included item.")
+        if not cleaned.get("due_date") and not cleaned.get("keep_undated") and "due_date" not in self.errors:
+            self.add_error("due_date", "Required for an included item, unless you select Keep date unknown.")
         if cleaned.get("title"):
             cleaned["title"] = " ".join(cleaned["title"].split())
         return cleaned

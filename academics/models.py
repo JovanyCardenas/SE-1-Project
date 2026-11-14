@@ -47,6 +47,7 @@ class SyllabusImport(models.Model):
     filename = models.CharField(max_length=255)
     file_hash = models.CharField(max_length=64)
     candidates = models.JSONField(default=list)
+    analysis = models.JSONField(default=dict, blank=True)
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.DRAFT)
     created_at = models.DateTimeField(auto_now_add=True)
     published_at = models.DateTimeField(null=True, blank=True)
@@ -61,11 +62,13 @@ class CourseAssignment(models.Model):
         LAB = "lab", "Lab"
         PRESENTATION = "presentation", "Presentation"
         EVENT = "event", "Course event / deadline"
+        CLASS_SESSION = "class_session", "Class session"
 
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="assignments")
     title = models.CharField(max_length=200)
     item_type = models.CharField(max_length=20, choices=Kind.choices)
-    due_date = models.DateField()
+    due_date = models.DateField(null=True, blank=True)
+    schedule_details = models.JSONField(default=dict, blank=True)
     source = models.CharField(max_length=20, default="SYLLABUS", editable=False)
     source_import = models.ForeignKey(SyllabusImport, on_delete=models.SET_NULL, null=True, related_name="assignments")
     source_text = models.TextField(blank=True)

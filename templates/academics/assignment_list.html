@@ -4,8 +4,15 @@
         <thead><tr><th scope="col">Date</th><th scope="col">Item</th><th scope="col">Type</th><th scope="col">Source</th></tr></thead>
         <tbody>{% for item in assignments %}
             <tr>
-                <td><time datetime="{{ item.due_date|date:'Y-m-d' }}">{{ item.due_date|date:"M j, Y" }}</time></td>
-                <td>{{ item.title }}{% if show_course %}<br><a href="{% url 'academics:course_detail' item.course_id %}">{{ item.course }}</a>{% endif %}</td>
+                <td>{% if item.due_date %}<time datetime="{{ item.due_date|date:'Y-m-d' }}">{{ item.due_date|date:"M j, Y" }}</time>{% else %}Date not provided{% endif %}</td>
+                <td>{{ item.title }}{% if show_course %}<br><a href="{% url 'academics:course_detail' item.course_id %}">{{ item.course }}</a>{% endif %}
+                    {% if item.schedule_details %}<details><summary>Schedule details</summary>
+                        {% if not item.due_date and item.schedule_details.date_text %}<p>Original timing: {{ item.schedule_details.date_text }}</p>{% endif %}
+                        {% if item.schedule_details.time_text %}<p>Time in syllabus: {{ item.schedule_details.time_text }}</p>{% endif %}
+                        {% if item.schedule_details.reading_text %}<p>Reading: {{ item.schedule_details.reading_text }}</p>{% endif %}
+                        <p>Source: page {{ item.source_page }}. Times and relative dates are reference text.</p>
+                    </details>{% endif %}
+                </td>
                 <td>{{ item.get_item_type_display }}</td>
                 <td>{{ item.source }} · Reviewed</td>
             </tr>
@@ -13,5 +20,5 @@
     </table>
 </div>
 {% else %}
-<div class="empty-state"><p>No verified deadlines yet.</p><span>Upload a syllabus and review the extracted items to publish them here.</span></div>
+<div class="empty-state"><p>No reviewed course items to show.</p><span>Upload a syllabus and review the extracted items to publish them here.</span></div>
 {% endif %}

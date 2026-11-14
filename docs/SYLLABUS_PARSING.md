@@ -1,67 +1,98 @@
-# Syllabus parsing
+# Local syllabus parsing
 
-## Try the flow
+This is a deterministic extraction-and-review prototype. It uses local pypdf text extraction,
+section recognition, table columns, and date/assessment rules. It makes no external AI or network
+calls. It is not a claim of accurate extraction from every syllabus; see [evaluation](PARSER_EVALUATION.md).
 
-1. Use Python 3.12 or 3.13, create/activate a virtual environment, and run `pip install -r requirements.txt`.
-2. Create `.env` from `.env.example`; set a nonempty `SECRET_KEY`, `DEBUG=True`, and localhost `ALLOWED_HOSTS`.
+## Try locally
+
+1. Use Python 3.12 or 3.13, create/activate a virtual environment, and install `requirements.txt`.
+2. Create `.env` from `.env.example`; set `SECRET_KEY`, `DEBUG=True`, and localhost `ALLOWED_HOSTS`.
 3. Run `python manage.py migrate` and `python manage.py runserver`.
-4. Register or sign in. Open **Courses → Add or join a course**.
-5. Enter the SJSU course code, section, semester, and year. Matching offerings share one course.
-6. Open **Upload syllabus**, choose that course, and upload a text-based PDF.
-7. Correct each proposed title, date, and type; uncheck unwanted rows. Original text and page numbers
-   are available beside each proposal. Undated/ambiguous rows start unchecked.
-8. Click **Publish selected items** to save shared course deadlines. They appear on the course page,
-   calendar list, and (for future dates) dashboard. Cancel saves no deadlines; Review later preserves the draft.
+4. Sign in, open **Courses → Add or join a course**, and enter code, section, semester, and year.
+5. Open **Upload syllabus**, choose the numeric date order, and upload a text-based PDF.
+6. Review titles, types, dates, warnings, source excerpts, and page numbers. Uncheck unwanted rows.
+   Undated and conflicting rows start unchecked. Include an undated item with **Keep date unknown**;
+   it is saved on the course page and excluded from the calendar and dated upcoming list.
+7. Inspect **Other course information found** for grading, assessment counts, meetings, and policies.
+   These are private reference findings, not planner tasks or shared grade-calculation settings.
+   **Download extracted information** exports the original analysis as JSON, not the edited form.
+8. **Publish selected items** saves reviewed course items. **Review later** retains the draft;
+   **Cancel import** saves no course items. No course items are created by extraction alone.
 
-Course identity is normalized for whitespace/case in codes and leading zeros in numeric sections.
-For example, `CMPE 131`, section `01` matches `cmpe131`, section `1` for the same term and year.
-This first version assumes SJSU; institution-aware matching is a future extension.
+Course matching normalizes whitespace/case and numeric section zeros: `CMPE 131`, section `01`
+matches `cmpe131`, section `1` for the same term/year. Matching currently assumes SJSU.
+Re-upload after a parser update; existing drafts retain their original analysis and published
+items are not automatically reinterpreted or changed.
 
-## Supported extraction
+## What the analysis represents
 
-- Text PDFs up to 10 MB, 30 pages, 250,000 extracted characters, and 100 distinct proposed items.
-- A page content stream over 5 MB is rejected before text extraction.
-- Assignment/homework/HW, quiz, exam/midterm/final, project, lab, presentation, and common course-event keywords.
-- Dates on the same line as the item; also a standalone date immediately before/after an item title.
-- US numeric dates: `9/15/2026`, `9-15-26`, `9/15`.
-- ISO dates: `2026-09-15`.
-- English month names: `September 15, 2026`, `Sep 15 2026`, `Sept. 15th`, `September 15`.
-- A missing year uses the selected course year and displays a warning.
-- Invalid dates, compact date ranges, multiple dates, and missing dates require manual correction.
-- Duplicate proposals are collapsed. No PDF content is sent to an external AI/API service.
+| Syllabus content | Result |
+| --- | --- |
+| Named assignment, exam, project, lab, quiz, presentation | Proposed assessment, dated when evidence supplies a single valid date |
+| Only a final-exam date | Final-exam proposal; no invented homework deadlines |
+| Undated, TBA, week-relative or ranged assessment | Reviewable undated item with original wording |
+| Date/topic or week/topic schedule | Class-session proposals, with readings retained where identified |
+| Holiday, closure, exam-review session | Course-event proposal |
+| "Five homework assignments" | Assessment overview with a count, not five fictional tasks |
+| Percentage or points grading table | Private grading components |
+| Recurring meeting, instructor details, policies | Separate private reference findings |
 
-The parser is deterministic and intentionally proposes rows for human review. It does not guarantee
-correct extraction from every syllabus layout. Compare the review with the original file, especially
-multi-column tables and text wrapping. Only dates are saved, not due times or time zones.
+Supported table structures include date/topic, week/date/topic, topic/date, assignment/due,
+weight/component, and week/topic/reading columns. Wrapped cells are joined when their indentation
+matches the recognized structure. Columns and headings must still be recognizable; arbitrary
+multicolumn layouts and extraction-order errors can cause omissions or misclassification.
 
-Scans/OCR, DOCX, grading weights, recurring events, arbitrary natural-language dates, and automatic
-updates to previously published deadlines are not supported. Weight-only grading rows are skipped.
-If a changed syllabus changes a title/date/type, it creates a separate reviewed item; it does not
-silently replace the old one. Shared-item editing/deletion needs a future correction workflow.
+Dates support ISO, English month names before/after the day, and numeric month/day or day/month
+according to the upload choice. A missing year uses the course year with a warning. An explicit
+due label can distinguish a release date from a deadline. Otherwise, multiple dates, ranges,
+week numbers, and relative expressions are preserved without inventing one calendar date.
+Weekday/date contradictions are flagged and start unchecked. Times are retained as reference text;
+they do not create time-zone-aware events or reminders. Recurring meetings are not expanded.
 
-## Data and permissions
+Each proposed item includes source text/page, type/category, original date wording, date status,
+warnings, and available time/reading text. The report also records blank pages and extraction counts.
+These counts describe output, not how much of the source was successfully understood.
 
-The shared data lives in `academics`, following the project specification:
+## Boundaries and remaining work
 
-- `Course`: one offering, unique by normalized code/section/semester/year.
-- `CourseEnrollment`: a unique user/course membership. Joining is self-service.
-- `SyllabusImport`: private review draft with filename, SHA-256, extracted candidates, uploader, and status.
-- `CourseAssignment`: published item with `SYLLABUS` source, original text/page, verifier, and import reference.
+- Text PDFs only, up to 10 MB, 30 pages, 250,000 extracted characters, and 100 proposals.
+  Page content streams above 5 MB are rejected before text extraction.
+- No OCR is bundled. Image-only PDFs are rejected; mixed text/scanned documents warn about blank
+  extracted pages. A partly scanned page may still contain some text and escape this warning.
+- DOCX, handwriting, non-English wording, arbitrary natural-language dates, and every possible
+  table layout are not supported or validated.
+- Similar mentions with different wording may remain separate proposals. Contradictory statements
+  are not comprehensively reconciled. Compare the source before publishing.
+- Policies are retained as excerpts, not interpreted into enforceable academic rules.
+- Shared item editing/deletion and automatic changes from updated syllabi are not implemented.
+  Changed title/date/type creates a separate item instead of replacing an existing one.
+- No manual missing-item form exists yet. Parser omissions therefore still need a future correction
+  workflow in addition to editing the proposed rows.
 
-The original PDF is not retained or served as a public media file. Drafts are database-backed and visible
-only to their uploader, who must still be enrolled. Published rows are visible to course members.
-Any enrolled member can upload, review, and publish. There is no instructor-approval role yet.
-Personal completion, grades, and notes are not stored on shared items.
+## Architecture and permissions
 
-Publication claims the draft and saves rows in one database transaction. Repeated submissions cannot
-republish the same draft. A database uniqueness constraint prevents duplicate assignments across
-imports using normalized title, due date, and type. Failures roll back the draft status and all new rows.
-Different offerings keep separate deadlines. Source text is rendered using Django's HTML escaping.
+The active upload path calls `academics.syllabus.analyze_syllabus(upload, year, date_order)`;
+`analyze_pages()` accepts already extracted text for tests. The report has `items`, `grading`,
+`assessment_overview`, `meetings`, `course_information`, `policies`, `warnings`, and `coverage`.
+`academics.parser` supplies shared date/limit helpers and the older `extract_candidates` / `parse_text`
+APIs, retained for compatibility. Those older APIs do not return the full structured report.
+The disconnected planner upload routes/forms/templates remain legacy scaffolding.
 
-The existing `/syllabus/upload/` URL now points to `academics.views.upload_syllabus`. Review/course URLs
-are namespaced under `/academics/`. `planner.parser` re-exports the new parser for discoverability;
-the old disconnected planner routes, forms, and templates remain legacy scaffolding and are not enabled.
-Use `academics.parser.extract_candidates`; its proposals use `item_type`, include flags, and source metadata.
+- `Course` and `CourseEnrollment` represent a shared offering and membership.
+- `SyllabusImport` stores private candidates and analysis, filename/hash, uploader, and status.
+- `CourseAssignment` stores reviewed shared items, nullable `due_date`, provenance, verifier, and
+  `schedule_details` containing original date/time/reading/category information.
+
+Original PDFs are not retained or publicly served. Drafts/reports require their uploader to remain
+enrolled. Shared items require course membership. Joining is self-service; any member may upload
+and publish. There is no instructor-approval role. Source text is HTML-escaped.
+
+Publication claims a draft and inserts rows atomically. Replays do not republish it. A unique
+fingerprint combines normalized title, type, and date; for undated items it also uses original date
+wording so the same topic in different weeks remains distinct. Failures roll back the transaction.
+The original analysis download does not expose another member's draft and remains available by its
+private report URL after publication.
 
 ## Validation
 
@@ -69,13 +100,15 @@ Use `academics.parser.extract_candidates`; its proposals use `item_type`, includ
 python manage.py check
 python manage.py makemigrations --check --dry-run
 python manage.py test
+python manage.py evaluate_syllabus_parser --report parser-evaluation.json
 ```
 
-Tests generate real PDFs with pypdf and cover supported dates, incomplete/ambiguous rows, upload limits,
-malformed/encrypted/blank PDFs, review edits, skipping, persistence, course reuse, access restrictions,
-CSRF, HTML escaping, duplicate/replayed publication, and transaction rollback. No external API key is needed.
+The evaluation command uses committed synthetic examples and exits with an error on mismatch.
+Tests also generate PDFs and exercise review edits, undated publication, calendar exclusion,
+access restrictions, CSRF, HTML escaping, duplicate/replayed publication, and rollback.
+No external API key is needed. See [evaluation](PARSER_EVALUATION.md) for the limits of this evidence.
 
-The new additive migration is `academics/migrations/0001_initial.py`. Apply it on deployment with
-`python manage.py migrate`. Do not replace the old planner migrations or regenerate this migration
-independently. The existing GitHub Actions workflow runs project checks, migration checks, and tests
-on Python 3.12 and 3.13; wait for its result and teammate review before merging.
+Run migrations locally after updating: `0001_initial` creates the academic models, and
+`0002_courseassignment_schedule_details_and_more` adds structured analysis, schedule details,
+class sessions, and nullable dates. Existing dated rows are preserved. These instructions do not
+authorize deployment or merging; this iteration remains local development work.

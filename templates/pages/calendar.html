@@ -8,10 +8,9 @@
 <section class="dashboard-header">
     <div>
         <p class="eyebrow">Academic Planner</p>
-        <h1>Assignment Calendar</h1>
+        <h1>Course Calendar</h1>
         <p class="dashboard-subtitle">
-            View your upcoming assignments, exams,
-            and important deadlines.
+            View dated assignments, exams, class sessions, and course events.
         </p>
     </div>
 </section>
@@ -25,7 +24,7 @@
             </div>
         </div>
 
-        <p class="text-muted">Shared syllabus deadlines, ordered by date.</p>
+        <p class="text-muted">Shared syllabus items, ordered by date. Undated items remain on their course page.</p>
         {% include "academics/assignment_list.html" with show_course=True %}
     </article>
 </section>

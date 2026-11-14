@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block content %}
+<section class="card"><h1>{% if task.pk %}Edit{% else %}Add{% endif %} Personal Assignment</h1>
+<p>This assignment is private to your account.</p>
+<form method="post" class="form">{% csrf_token %}{{ form.as_p }}<button class="button" type="submit">Save assignment</button> <a href="{% url 'planner:task_list' %}">Cancel</a></form></section>{% endblock %}
