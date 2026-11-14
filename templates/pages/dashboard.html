@@ -30,7 +30,8 @@
         <div class="card-heading">
             <div>
                 <p class="card-label">Planner</p>
-                <h2>Upcoming Assignments</h2>
+                <h2>Upcoming Course Items</h2>
+                <a href="{% url 'planner:task_list' %}">My personal assignments</a>
             </div>
 
             <a href="{% url 'calendar' %}" class="card-link">View All</a>
@@ -83,7 +84,7 @@
         </a>
 
         <!-- Add Assignment -->
-        <a href="#" class="quick-action-card">
+        <a href="{% url 'planner:task_new' %}" class="quick-action-card">
             <div class="quick-action-icon">✓</div>
             <div>
                 <h3>Add Assignment</h3>

@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% block content %}<section class="card"><h1>Delete Personal Assignment</h1><p>Delete {{ task.title }}?</p><form method="post">{% csrf_token %}<button class="button" type="submit">Confirm delete</button> <a href="{% url 'planner:task_list' %}">Cancel</a></form></section>{% endblock %}

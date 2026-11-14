@@ -144,7 +144,7 @@ def dashboard(request):
 @login_required
 def calendar_view(request):
     return render(request, "pages/calendar.html", {
-        "assignments": CourseAssignment.objects.filter(course__enrollments__user=request.user).select_related("course"),
+        "assignments": CourseAssignment.objects.filter(course__enrollments__user=request.user, due_date__isnull=False).select_related("course"),
     })
 
 

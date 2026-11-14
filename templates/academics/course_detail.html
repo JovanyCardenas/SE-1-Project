@@ -15,7 +15,7 @@
 </section>
 {% endif %}
 <section class="card">
-    <h2>Shared deadlines</h2>
+    <h2>Shared course items</h2>
     {% include "academics/assignment_list.html" with assignments=course.assignments.all %}
     <a href="{% url 'course_list' %}">Back to courses</a>
 </section>

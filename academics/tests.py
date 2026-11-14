@@ -101,6 +101,115 @@ class ParserTests(SimpleTestCase):
     def test_text_with_no_deadlines_returns_empty(self):
         self.assertEqual(extract_candidates(BytesIO(syllabus_pdf("Welcome to CMPE 131"))), [])
 
+    def test_policy_prose_and_recurring_meetings_are_not_tasks(self):
+        policies = [
+            "Lab (Section 14): Monday 3:00 to 5:45 PM",
+            "Misc/Lab: Lecture 2 hours/lab 3 hours.",
+            "Exams will be closed book, closed notes.",
+            "Course Requirements and Assignments",
+            "Lab Group Assignments (group of 2 or 3): Course assignments play an important role",
+            "This course has a total of 8 lab assignments.",
+            "Assignments will be graded based on completeness and quality of the lab reports.",
+            "Students who fail the lab portion will receive an F grade for the course.",
+            "Class Assignment Submission Policy:",
+            "The course will include 5 homework assignments for 50 points.",
+            "Assignments must be handwritten and scanned for submission.",
+            "Early submission: Submit at least 24 hours before the deadline to earn bonus points.",
+            "Exams: There will be one midterm (50 points) and a final exam (70 points).",
+            "Makeup Exam: No make-up exams except in an emergency.",
+            "The final grade will be based on your performance.",
+        ]
+        for policy in policies:
+            with self.subTest(policy=policy):
+                self.assertEqual(parse_text(policy, year=2026), [])
+
+    def test_identifiable_undated_items_remain_for_review(self):
+        for title in ("Homework 2", "Lab Report 3 - TBA", "Project proposal - TBD", "Final project", "Midterm exam"):
+            with self.subTest(title=title):
+                row = parse_text(title, year=2026)[0]
+                self.assertEqual(row["due_date"], "")
+                self.assertFalse(row["include"])
+
+    def test_explicit_deadlines_without_assessment_keywords(self):
+        for title in ("Design report due 9/15/2026", "Submit the design report by 9/15/2026"):
+            self.assertEqual(parse_text(title)[0]["due_date"], "2026-09-15")
+
+    def test_exam_reviews_are_events(self):
+        for title in ("Topic Review / Midterm Review", "Final Exam Review", "Review for the final"):
+            with self.subTest(title=title):
+                row = parse_text(f"{title} - 10/14/2026")[0]
+                self.assertEqual(row["item_type"], "event")
+
+    def test_wrapped_table_preserves_title_date_and_page(self):
+        text = ("Week    Date                  Topics\n"
+                "9       Wed, Oct 14           Topic Review / Midterm Review\n\n"
+                "10      Mon, Oct 19           Midterm Exam - On paper, during\n"
+                "                               regular class hour\n\n"
+                "17      Mon, Dec 7 (Last      Final Exam Review\n"
+                "        Day of Instruction)\n\n"
+                "Finals  Fri, Dec 11, 8:30     Final Exam - On paper\n"
+                "        - 10:30 AM\n")
+        rows = parse_text(text, year=2026, page=6)
+        self.assertEqual(len(rows), 4)
+        self.assertEqual([row["due_date"] for row in rows], ["2026-10-14", "2026-10-19", "2026-12-07", "2026-12-11"])
+        self.assertEqual([row["item_type"] for row in rows], ["event", "exam", "event", "exam"])
+        self.assertEqual(rows[1]["title"], "Midterm Exam - On paper, during regular class hour")
+        self.assertEqual(rows[3]["title"], "Final Exam - On paper")
+        self.assertEqual(rows[3]["source_page"], 6)
+        self.assertIn("10:30 AM", rows[3]["source_text"])
+
+    def test_holiday_note_uses_its_own_date_not_lecture_date(self):
+        text = ("4       Wed, Sep 9            Processor Instruction Set\n"
+                "        (Mon, Sep 7 -         Architecture and Language\n"
+                "        Labor Day,\n"
+                "        campus closed,\n"
+                "        no lecture)\n\n"
+                "13      Mon, Nov 16           Memory Hierarchy\n"
+                "        (Wed, Nov 11 -\n"
+                "        Veterans Day,\n"
+                "        campus closed,\n"
+                "        no lecture)")
+        rows = parse_text(text, year=2026)
+        self.assertEqual(len(rows), 2)
+        self.assertEqual([row["due_date"] for row in rows], ["2026-09-07", "2026-11-11"])
+        self.assertTrue(all(row["item_type"] == "event" for row in rows))
+        self.assertEqual(rows[0]["title"], "Labor Day, campus closed, no lecture")
+
+    def test_weekday_conflict_requires_confirmation(self):
+        row = parse_text("Mon, Dec 11, 2026 Final Exam")[0]
+        self.assertEqual(row["due_date"], "2026-12-11")
+        self.assertFalse(row["include"])
+        self.assertTrue(any("Friday" in warning for warning in row["warnings"]))
+        self.assertTrue(parse_text("Fri, Dec 11, 2026 Final Exam")[0]["include"])
+
+    def test_layout_pdf_extraction_handles_wrapped_date_cell(self):
+        text = ("Finals  Fri, Dec 11, 8:30     Final Exam - On paper\n"
+                "        - 10:30 AM")
+        rows = extract_candidates(BytesIO(syllabus_pdf(text, fixed_width=True)), year=2026)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["due_date"], "2026-12-11")
+        self.assertEqual(rows[0]["title"], "Final Exam - On paper")
+        self.assertIn("10:30 AM", rows[0]["source_text"])
+
+    def test_two_column_table_does_not_consume_following_prose(self):
+        rows = parse_text("9/15/2026    Homework 1\nAssignments must be handwritten.\nQuiz 2 - TBA")
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]["title"], "Homework 1")
+        self.assertNotIn("handwritten", rows[0]["source_text"])
+        self.assertEqual(rows[1]["due_date"], "")
+
+    def test_unicode_ligatures_are_normalized(self):
+        self.assertEqual(parse_text("\ufb01nal exam - 12/11/2026")[0]["item_type"], "exam")
+
+    def test_numbered_list_and_parenthetical_titles(self):
+        row = parse_text("1. Lab 2 (Report) - 9/15/2026")[0]
+        self.assertEqual(row["title"], "Lab 2 (Report)")
+        self.assertEqual(row["due_date"], "2026-09-15")
+
+    def test_policy_only_pdf_has_no_candidates(self):
+        text = "Lab assignments will be graded for completeness.\nClass Assignment Submission Policy:\nExams will be closed book."
+        self.assertEqual(extract_candidates(BytesIO(syllabus_pdf(text)), year=2026), [])
+
 
 class SyllabusWorkflowTests(TestCase):
     @classmethod
@@ -228,7 +337,7 @@ class SyllabusWorkflowTests(TestCase):
     def test_empty_extraction_has_actionable_review_state(self):
         draft = self.draft("Welcome to CMPE 131")
         response = self.client.get(self.review_url(draft))
-        self.assertContains(response, "No possible deadlines")
+        self.assertContains(response, "No individual tasks or schedule entries were identified")
         self.assertNotContains(response, "Publish selected items")
 
     def test_missing_and_tampered_management_forms_are_rejected(self):
@@ -356,3 +465,44 @@ class SyllabusWorkflowTests(TestCase):
         self.assertFalse(CourseAssignment.objects.exists())
         draft.refresh_from_db()
         self.assertEqual(draft.status, SyllabusImport.Status.DRAFT)
+
+    def test_undated_items_can_be_saved_without_fake_calendar_dates(self):
+        draft = self.draft("Final project - TBD")
+        data = self.review_data(draft)
+        data.update({"items-0-include": "on", "items-0-keep_undated": "on"})
+        self.assertEqual(self.client.post(self.review_url(draft), data).status_code, 302)
+        item = CourseAssignment.objects.get()
+        self.assertIsNone(item.due_date)
+        self.assertContains(self.client.get(reverse("academics:course_detail", args=[self.course.pk])), "Date not provided")
+        self.assertNotContains(self.client.get(reverse("calendar")), item.title)
+
+    def test_unknown_date_checkbox_does_not_hide_invalid_date_input(self):
+        draft = self.draft()
+        data = self.review_data(draft)
+        data.update({"items-0-due_date": "2026-02-30", "items-0-keep_undated": "on"})
+        self.assertContains(self.client.post(self.review_url(draft), data), "Enter a valid date")
+        self.assertFalse(CourseAssignment.objects.exists())
+
+    def test_report_is_private_and_contains_separate_findings(self):
+        draft = self.draft("Grading\nHomework 20%\nFinal Exam 80%")
+        url = reverse("academics:syllabus_report", args=[draft.pk])
+        response = self.client.get(url)
+        self.assertEqual(len(response.json()["grading"]), 2)
+        self.assertEqual(response.json()["items"], [])
+        self.assertContains(self.client.get(self.review_url(draft)), "Other course information found")
+        self.client.force_login(self.other)
+        self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_same_undated_topic_in_different_weeks_is_not_collapsed(self):
+        text = "Week    Topics\n1       Topic Review\n2       Topic Review"
+        self.upload(data=syllabus_pdf(text, fixed_width=True))
+        draft = SyllabusImport.objects.latest("created_at")
+        data = self.review_data(draft)
+        for i in range(2):
+            data[f"items-{i}-include"] = "on"
+            data[f"items-{i}-keep_undated"] = "on"
+        self.assertEqual(self.client.post(self.review_url(draft), data).status_code, 302)
+        self.assertEqual(CourseAssignment.objects.count(), 2)
+        response = self.client.get(reverse("academics:course_detail", args=[self.course.pk]))
+        self.assertContains(response, "Original timing: Week 1")
+        self.assertContains(response, "Original timing: Week 2")

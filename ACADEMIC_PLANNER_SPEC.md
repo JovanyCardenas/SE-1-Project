@@ -621,10 +621,12 @@ SAP planner event created/updated
 
 ## 15. Development Roadmap
 
-Current implementation note: the syllabus flow now supports SJSU course matching/enrollment,
-PDF extraction, private review drafts, publication of shared date-based items, and deadline lists.
-See [Syllabus Parsing](docs/SYLLABUS_PARSING.md) for the precise scope. Original PDF retention,
-grading categories, personal planner state, and the broader integrations below remain future work.
+Current implementation note: the local syllabus prototype supports SJSU course matching/enrollment,
+text-PDF analysis, private review drafts, and publication of dated or undated course items, including
+class sessions. Grading, assessment counts, meetings, and policies are private reference findings.
+See [Syllabus Parsing](docs/SYLLABUS_PARSING.md) for supported cases and limitations. Original PDF retention, shared grading settings, personal
+planner state, and the broader integrations below remain future work. Parsing must run entirely
+locally; no external AI API is authorized. This iteration has not been deployed.
 
 ### Sprint 1 — Shared Academic Data Foundation
 

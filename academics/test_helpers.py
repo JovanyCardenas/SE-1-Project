@@ -5,11 +5,11 @@ from pypdf import PdfWriter
 from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 
 
-def syllabus_pdf(text="Homework 1 - September 15, 2026", pages=1, password=None):
+def syllabus_pdf(text="Homework 1 - September 15, 2026", pages=1, password=None, fixed_width=False):
     writer = PdfWriter()
     font = DictionaryObject({
         NameObject("/Type"): NameObject("/Font"), NameObject("/Subtype"): NameObject("/Type1"),
-        NameObject("/BaseFont"): NameObject("/Helvetica"),
+        NameObject("/BaseFont"): NameObject("/Courier" if fixed_width else "/Helvetica"),
     })
     for _ in range(pages):
         page = writer.add_blank_page(width=612, height=792)

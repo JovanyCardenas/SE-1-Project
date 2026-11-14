@@ -1,14 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Review Syllabus | Spartan Planner{% endblock %}
 {% block content %}
-<section class="dashboard-header">
+<section class="dashboard-header syllabus-review-header">
     <div><p class="eyebrow">{{ draft.course }}</p><h1>Review Syllabus</h1>
     <p class="dashboard-subtitle">{{ draft.filename }} · Nothing is published until you confirm.</p></div>
 </section>
 <section class="card">
     <p>Check every title, type, and date against your syllabus. Uncheck items you do not want to publish.
-       Dates use month/day order; missing years use {{ draft.course.year }}. Only dates, not times, are saved.</p>
+       Missing years use {{ draft.course.year }}. Use “Keep date unknown” when the syllabus gives no exact date.
+       Original times and relative dates are kept as reference text; they are not automatically scheduled.</p>
     <p>Published items will be visible to all students enrolled in this course. Existing matching items are skipped; changed deadlines do not overwrite previous items.</p>
+    <p><a href="{% url 'academics:syllabus_report' draft.pk %}">Download extracted information</a></p>
+    {% for warning in draft.analysis.warnings %}<p class="review-warnings">{{ warning }}</p>{% endfor %}
+    {% if draft.analysis.coverage %}
+    <p>{{ draft.analysis.coverage.dated_items }} dated items · {{ draft.analysis.coverage.undated_items }} undated items · {{ draft.analysis.coverage.class_sessions }} class sessions</p>
+    {% endif %}
     {% if draft.candidates %}
     <form method="post" class="form">
         {% csrf_token %}
@@ -16,7 +22,7 @@
         <div role="alert">{{ formset.non_form_errors }}</div>
         {% for form, candidate in rows %}
         <fieldset class="syllabus-review-row">
-            <legend>Item {{ forloop.counter }} · Page {{ candidate.source_page }}</legend>
+            <legend>Item {{ forloop.counter }} · {{ candidate.category_label|default:"Assessment" }} · Page {{ candidate.source_page }}</legend>
             {{ form.non_field_errors }}
             <div class="review-fields">
                 {% for field in form %}
@@ -24,15 +30,20 @@
                 {% endfor %}
             </div>
             {% if candidate.warnings %}<ul class="review-warnings">{% for warning in candidate.warnings %}<li>{{ warning }}</li>{% endfor %}</ul>{% endif %}
+            {% if candidate.time_text %}<p>Time in syllabus: {{ candidate.time_text }}</p>{% endif %}
+            {% if candidate.reading_text %}<p>Reading: {{ candidate.reading_text }}</p>{% endif %}
+            {% if not candidate.due_date and candidate.date_text %}<p>Date wording: {{ candidate.date_text }}</p>{% endif %}
             <details><summary>Original syllabus text</summary><p>{{ candidate.source_text }}</p></details>
         </fieldset>
         {% endfor %}
         <button type="submit" class="button">Publish selected items</button>
     </form>
     {% else %}
-    <div class="empty-state"><p>No possible deadlines were detected.</p>
-        <span>Try a text-based syllabus with assignment names and dates on the same line. You can cancel and upload another file.</span></div>
+    <div class="empty-state"><p>No individual tasks or schedule entries were identified.</p>
+        <span>Check the findings below and compare them with your original syllabus. The parser may have
+        missed content or the document may describe only general requirements.</span></div>
     {% endif %}
+    {% include "academics/syllabus_findings.html" with analysis=draft.analysis %}
     <form method="post" class="mt-md">
         {% csrf_token %}
         <button type="submit" name="action" value="cancel" class="button button-secondary">Cancel import</button>

@@ -1,0 +1,31 @@
+{% if analysis %}
+<section class="mt-lg">
+    <h2>Other course information found</h2>
+    <p>These findings are kept with your private import for reference. They do not create planner tasks.</p>
+    {% if analysis.assessment_overview %}
+    <details open><summary>Assessment overview ({{ analysis.assessment_overview|length }})</summary>
+        <ul>{% for entry in analysis.assessment_overview %}
+            <li>{% if entry.count != None %}{{ entry.count }} {% endif %}{{ entry.label }} — page {{ entry.source_page }}
+                <details><summary>Source</summary><p>{{ entry.source_text }}</p></details></li>
+        {% endfor %}</ul>
+    </details>{% endif %}
+    {% if analysis.grading %}
+    <details open><summary>Grading ({{ analysis.grading|length }})</summary>
+        <ul>{% for entry in analysis.grading %}
+            <li>{{ entry.label }}{% if entry.weight != None %} — {{ entry.weight }}%{% endif %}{% if entry.points != None %} — {{ entry.points }} points{% endif %} — page {{ entry.source_page }}</li>
+        {% endfor %}</ul>
+    </details>{% endif %}
+    {% if analysis.meetings %}
+    <details><summary>Recurring class meetings ({{ analysis.meetings|length }})</summary>
+        <ul>{% for entry in analysis.meetings %}<li>{{ entry.label }} — page {{ entry.source_page }}</li>{% endfor %}</ul>
+    </details>{% endif %}
+    {% if analysis.course_information %}
+    <details><summary>Course and instructor information ({{ analysis.course_information|length }})</summary>
+        <ul>{% for entry in analysis.course_information %}<li>{{ entry.label }}: {{ entry.value }} — page {{ entry.source_page }}</li>{% endfor %}</ul>
+    </details>{% endif %}
+    {% if analysis.policies %}
+    <details><summary>Policies and instructions ({{ analysis.policies|length }})</summary>
+        {% for entry in analysis.policies %}<p>{{ entry.source_text }} — page {{ entry.source_page }}</p>{% endfor %}
+    </details>{% endif %}
+</section>
+{% endif %}

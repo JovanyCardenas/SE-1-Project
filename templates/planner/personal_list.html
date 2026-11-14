@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block content %}
+<section class="card"><h1>My Personal Assignments</h1><p>Only you can see these assignments and notes.</p>
+<a class="button" href="{% url 'planner:task_new' %}">Add assignment</a>
+{% for task in tasks %}<article><h2>{{ task.title }}</h2><p>{{ task.course|default:"No course" }} · {{ task.due_date|default:"Date not provided" }} · {% if task.completed %}Complete{% else %}Incomplete{% endif %} · MANUAL</p><p>{{ task.notes }}</p><a href="{% url 'planner:task_edit' task.pk %}">Edit</a> · <a href="{% url 'planner:task_delete' task.pk %}">Delete</a></article>{% empty %}<p>No personal assignments yet.</p>{% endfor %}</section>{% endblock %}
